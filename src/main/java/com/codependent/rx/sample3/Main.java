@@ -7,7 +7,6 @@ import java.time.Instant;
 import rx.Observable;
 import rx.Subscriber;
 
-
 public class Main {
 
 	public static void main(String[] args) {
@@ -20,10 +19,12 @@ public class Main {
 						Duration duration = Duration.between(instant, clock.instant());
 						s.onNext( duration );
 					}
+					s.onCompleted();
 				});
 				t.start();
 			}
-		);
+		).doOnTerminate( () -> {System.out.println("STOPWATCH FINISHED");} );
+		
 		
 		StopWatchObserver observer = new StopWatchObserver("John", 10);
 		stopWatch.subscribe(observer);

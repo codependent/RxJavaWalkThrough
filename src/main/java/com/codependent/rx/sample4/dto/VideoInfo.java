@@ -1,26 +1,26 @@
 package com.codependent.rx.sample4.dto;
 
-public class VideoFullInfo {
+public class VideoInfo {
 
 	private VideoBasicInfo basicInfo;
 	private VideoRating rating;
 	
-	public VideoFullInfo(VideoBasicInfo basicInfo, VideoRating rating) {
+	public VideoInfo(VideoBasicInfo basicInfo, VideoRating rating) {
 		super();
 		this.basicInfo = basicInfo;
 		this.rating = rating;
 	}
 	public Integer getLength() {
-		return basicInfo.getLength();
+		return basicInfo!= null ? basicInfo.getLength() : null;
 	}
 	public Integer getId() {
-		return basicInfo.getId();
+		return basicInfo!= null ? basicInfo.getId() : null;
 	}
 	public String getName() {
-		return basicInfo.getName();
+		return basicInfo!= null ? basicInfo.getName() : null;
 	}
 	public Integer getRating() {
-		return rating.getRating();
+		return rating!=null ? rating.getRating() : null;
 	}
 	@Override
 	public String toString() {

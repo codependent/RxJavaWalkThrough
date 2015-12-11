@@ -1,0 +1,6 @@
+---
+spring:
+  name: videoApplication
+
+server:
+  port: ${PORT:9999}

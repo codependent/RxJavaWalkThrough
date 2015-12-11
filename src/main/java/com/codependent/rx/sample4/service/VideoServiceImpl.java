@@ -3,12 +3,15 @@ package com.codependent.rx.sample4.service;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.stereotype.Service;
+
 import rx.Observable;
 
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
-import com.codependent.rx.sample4.dto.VideoFullInfo;
+import com.codependent.rx.sample4.dto.VideoInfo;
 import com.codependent.rx.sample4.dto.VideoRating;
 
+@Service
 public class VideoServiceImpl implements VideoService{
 
 	private Map<Integer, VideoBasicInfo> videoInfos = new HashMap<Integer, VideoBasicInfo>();
@@ -42,9 +45,9 @@ public class VideoServiceImpl implements VideoService{
 		});
 	}
 	
-	public Observable<VideoFullInfo> getVideoFullInfo(Integer videoId){
+	public Observable<VideoInfo> getVideoFullInfo(Integer videoId){
 		return Observable.zip(getVideoBasicInfo(videoId), getVideoRating(videoId), (VideoBasicInfo basicInfo, VideoRating rating) -> {
-			return new VideoFullInfo(basicInfo, rating);
+			return new VideoInfo(basicInfo, rating);
 		});
 	}
 }

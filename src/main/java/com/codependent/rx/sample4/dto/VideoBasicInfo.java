@@ -6,6 +6,8 @@ public class VideoBasicInfo {
 	private String name;
 	private Integer length;
 	
+	public VideoBasicInfo(){}
+	
 	public VideoBasicInfo(Integer id, String name, Integer length) {
 		super();
 		this.id = id;

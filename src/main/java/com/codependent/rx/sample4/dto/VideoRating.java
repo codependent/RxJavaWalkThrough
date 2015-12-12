@@ -5,6 +5,8 @@ public class VideoRating {
 	private Integer videoId;
 	private Integer rating;
 	
+	public VideoRating(){}
+	
 	public VideoRating(Integer videoId, Integer rating) {
 		super();
 		this.videoId = videoId;

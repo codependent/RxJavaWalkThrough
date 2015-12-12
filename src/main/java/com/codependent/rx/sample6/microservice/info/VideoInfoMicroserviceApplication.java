@@ -23,6 +23,11 @@ public class VideoInfoMicroserviceApplication {
 	
 	@RequestMapping(value="/videos/{videoId}", produces="application/json")
     public Observable<VideoBasicInfo> getVideoInfo(@PathVariable Integer videoId) {
+		try {
+			Thread.sleep(10000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return videoService.getVideoBasicInfo(videoId);
 	}
 	

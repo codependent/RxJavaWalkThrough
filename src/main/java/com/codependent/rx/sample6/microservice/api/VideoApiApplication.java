@@ -8,6 +8,9 @@ import org.springframework.cloud.netflix.eureka.EnableEurekaClient;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.async.DeferredResult;
+
+import rx.Observable;
 
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
 import com.codependent.rx.sample4.dto.VideoInfo;
@@ -24,10 +27,16 @@ public class VideoApiApplication {
 	private VideoClient videoClient;
 	
 	@RequestMapping(value="/videos/{videoId}", produces="application/json")
-    public VideoInfo getVideoInfo(@PathVariable Integer videoId) {
-		VideoBasicInfo videoBasicInfo = videoClient.getVideoBasicInfo(videoId);
-		VideoRating videoRating = videoClient.getVideoRating(videoId);
-		return new VideoInfo(videoBasicInfo, videoRating);
+    public DeferredResult<VideoInfo> getVideoInfo(@PathVariable Integer videoId) {
+		DeferredResult<VideoInfo> dr = new DeferredResult<VideoInfo>();
+		Observable<VideoBasicInfo> videoBasicInfo = videoClient.getVideoBasicInfo(videoId);
+		Observable<VideoRating> videoRating = videoClient.getVideoRating(videoId);
+
+		Observable.zip(videoBasicInfo, videoRating, (info, rating) -> {
+			return new VideoInfo(info, rating);
+		}).subscribe(dr::setResult, dr::setErrorResult);
+		
+		return dr;
     }
 	
     public static void main(String[] args) {

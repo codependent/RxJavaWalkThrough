@@ -11,7 +11,20 @@ eureka:
       defaultZone: http://localhost:8761/eureka/
     healthcheck:
       enabled: true
-  
+      
+hystrix:
+  command:
+    getVideoBasicInfo:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000  
+    getVideoRating:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 60000  
+
 logging:
 #   file: /var/memento/security.log
   level:

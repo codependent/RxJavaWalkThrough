@@ -1,6 +1,8 @@
----
 spring:
   name: videoApplication
+  jpa:
+    hibernate:
+      ddl-auto: update
 
 server:
   port: ${PORT:9999}

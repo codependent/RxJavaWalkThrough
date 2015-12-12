@@ -21,7 +21,7 @@ public class VideoController {
 	@Autowired
 	private VideoService videoService;
 	
-	@RequestMapping("/{videoId}")
+	@RequestMapping(value="/{videoId}", produces="application/json")
 	public VideoInfo getVideoInfo(@PathVariable Integer videoId, @RequestParam(required=false) String filter){
 		VideoInfo videoInfo = null;
 		if("basicInfo".equalsIgnoreCase(filter)){
@@ -37,7 +37,7 @@ public class VideoController {
 		return videoInfo;
 	}
 	
-	@RequestMapping(value="/{videoId}", params="async=true")
+	@RequestMapping(value="/{videoId}", produces="application/json", params="async=true")
 	public DeferredResult<VideoInfo> getVideoInfoAsync(@PathVariable Integer videoId, @RequestParam(required=false) String filter){
 		DeferredResult<VideoInfo> videoInfo = new DeferredResult<VideoInfo>();
 		if("basicInfo".equalsIgnoreCase(filter)){

@@ -1,7 +1,14 @@
 package com.codependent.rx.sample4.dto;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class VideoBasicInfo {
 
+	@Id
+    @GeneratedValue
 	private Integer id;
 	private String name;
 	private Integer length;

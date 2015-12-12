@@ -1,6 +1,9 @@
 spring:
   application:
     name: videoinfo-microservice
+  jpa:
+    hibernate:
+      ddl-auto: update
     
 server:
   port: 9999

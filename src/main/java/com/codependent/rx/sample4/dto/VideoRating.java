@@ -1,8 +1,16 @@
 package com.codependent.rx.sample4.dto;
 
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+
+@Entity
 public class VideoRating {
 
+	@Id
+    @GeneratedValue
 	private Integer videoId;
+	
 	private Integer rating;
 	
 	public VideoRating(){}

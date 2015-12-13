@@ -1,3 +1,9 @@
+spring:
+  application:
+    name: eureka
+  datasource:
+    initialize: false
+
 server:
   port: ${PORT:8761}
         

@@ -1,4 +1,4 @@
-package com.codependent.rx.sample6.eureka;
+package com.codependent.rx.sampleapi.eureka;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;

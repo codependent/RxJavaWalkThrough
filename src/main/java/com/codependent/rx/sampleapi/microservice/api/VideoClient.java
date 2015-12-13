@@ -1,6 +1,9 @@
-package com.codependent.rx.sample6.microservice.api;
+package com.codependent.rx.sampleapi.microservice.api;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -21,6 +24,40 @@ public class VideoClient {
 	private EurekaClient discoveryClient;
 	
 	private RestTemplate restTemplate = new RestTemplate();
+	
+	@HystrixCommand
+	public Observable<VideoBasicInfo> addBasicInfo(VideoBasicInfo videoInfo){
+		return new ObservableResult<VideoBasicInfo>() {
+			@Override
+			public VideoBasicInfo invoke() {
+				InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEOINFO-MICROSERVICE", false);
+				String homePageUrl = ii.getHomePageUrl();
+				HttpHeaders headers = new HttpHeaders();
+				headers.add("Accept", "application/json");
+				headers.add("Content-Type", "application/json");
+				HttpEntity<VideoBasicInfo> entity = new HttpEntity<VideoBasicInfo>(videoInfo, headers);
+				ResponseEntity<VideoBasicInfo> info = restTemplate.exchange(homePageUrl+"/videos", HttpMethod.POST, entity, VideoBasicInfo.class, new Object[]{});
+				return info.getBody();
+			}
+		};
+	}
+	
+	@HystrixCommand
+	public Observable<VideoRating> addRating(VideoRating rating){
+		return new ObservableResult<VideoRating>() {
+			@Override
+			public VideoRating invoke() {
+				InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEORATING-MICROSERVICE", false);
+				String homePageUrl = ii.getHomePageUrl();
+				HttpHeaders headers = new HttpHeaders();
+				headers.add("Accept", "application/json");
+				headers.add("Content-Type", "application/json");
+				HttpEntity<VideoRating> entity = new HttpEntity<VideoRating>(rating, headers);
+				ResponseEntity<VideoRating> info = restTemplate.exchange(homePageUrl+"/videos", HttpMethod.POST, entity, VideoRating.class, new Object[]{});
+				return info.getBody();
+			}
+		};
+	}
 	
 	@HystrixCommand
 	public Observable<VideoBasicInfo> getVideoBasicInfo(Integer videoId){

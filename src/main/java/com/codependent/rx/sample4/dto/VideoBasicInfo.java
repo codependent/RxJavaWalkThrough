@@ -3,8 +3,10 @@ package com.codependent.rx.sample4.dto;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="VIDEO_BASIC_INFO")
 public class VideoBasicInfo {
 
 	@Id

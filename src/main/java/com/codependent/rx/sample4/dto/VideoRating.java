@@ -1,14 +1,18 @@
 package com.codependent.rx.sample4.dto;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 @Entity
+@Table(name="VIDEO_RATING")
 public class VideoRating {
 
 	@Id
     @GeneratedValue
+    @Column(name="VIDEO_ID")
 	private Integer videoId;
 	
 	private Integer rating;

@@ -6,3 +6,16 @@ spring:
 
 server:
   port: ${PORT:9999}
+  
+threadExecutor:
+  corePoolSize: 20
+  maxPoolSize: 40
+  
+videoServiceImpl.service:
+  delay: 200
+  
+videoServiceImpl:
+  getVideoBasicInfo:
+    delay: 100
+  getVideoRating:
+    delay: 100

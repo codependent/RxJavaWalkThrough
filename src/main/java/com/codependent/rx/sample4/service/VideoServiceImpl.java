@@ -1,6 +1,7 @@
 package com.codependent.rx.sample4.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
@@ -23,6 +24,12 @@ public class VideoServiceImpl implements VideoService{
 	
 	@Autowired
 	private TransactionTemplate  transactionTemplate;
+	
+	@Value("${videoServiceImpl.getVideoBasicInfo.delay:}")
+	private Integer basicInfoDelay;
+	
+	@Value("${videoServiceImpl.getVideoRating.delay:}")
+	private Integer videoRatingDelay;
 
 	@Override
 	public Observable<VideoBasicInfo> addVideoBasicInfo(VideoBasicInfo videoBasicInfo) {
@@ -49,6 +56,11 @@ public class VideoServiceImpl implements VideoService{
 	public Observable<VideoBasicInfo> getVideoBasicInfo(Integer videoId){
 		return Observable.create( s -> {
 			VideoBasicInfo videoBasicInfo = transactionTemplate.execute( status -> {
+				if(basicInfoDelay!=null){
+					try {
+						Thread.sleep(basicInfoDelay);
+					} catch (Exception e) {}
+				}
 				VideoBasicInfo v = basicInfoRepo.findOne(videoId);
 				return v;
 			});
@@ -59,6 +71,11 @@ public class VideoServiceImpl implements VideoService{
 	public Observable<VideoRating> getVideoRating(Integer videoId){
 		return Observable.create( s -> {
 			VideoRating videoRating = transactionTemplate.execute( status -> {
+				if(videoRatingDelay!=null){
+					try {
+						Thread.sleep(videoRatingDelay);
+					} catch (Exception e) {}
+				}
 				VideoRating v = ratingRepo.findOne(videoId);
 				return v;
 			});

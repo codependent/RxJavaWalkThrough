@@ -14,8 +14,8 @@ threadExecutor:
 videoServiceImpl.service:
   delay: 200
   
-videoServiceImpl:
+videoService:
   getVideoBasicInfo:
-    delay: 100
+    delay: 200
   getVideoRating:
-    delay: 100
+    delay: 200

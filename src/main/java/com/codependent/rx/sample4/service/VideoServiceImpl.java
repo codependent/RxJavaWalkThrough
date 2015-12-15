@@ -25,10 +25,10 @@ public class VideoServiceImpl implements VideoService{
 	@Autowired
 	private TransactionTemplate  transactionTemplate;
 	
-	@Value("${videoServiceImpl.getVideoBasicInfo.delay:}")
+	@Value("${videoService.getVideoBasicInfo.delay:}")
 	private Integer basicInfoDelay;
 	
-	@Value("${videoServiceImpl.getVideoRating.delay:}")
+	@Value("${videoService.getVideoRating.delay:}")
 	private Integer videoRatingDelay;
 
 	@Override
@@ -65,6 +65,7 @@ public class VideoServiceImpl implements VideoService{
 				return v;
 			});
 			s.onNext(videoBasicInfo);
+			s.onCompleted();
 		});
 	}
 	
@@ -80,6 +81,7 @@ public class VideoServiceImpl implements VideoService{
 				return v;
 			});
 			s.onNext(videoRating);
+			s.onCompleted();
 		});
 	}
 	

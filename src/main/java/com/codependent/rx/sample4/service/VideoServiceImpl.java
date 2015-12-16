@@ -1,5 +1,7 @@
 package com.codependent.rx.sample4.service;
 
+import java.util.concurrent.TimeUnit;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -54,35 +56,27 @@ public class VideoServiceImpl implements VideoService{
 	}
 	
 	public Observable<VideoBasicInfo> getVideoBasicInfo(Integer videoId){
-		return Observable.create( s -> {
+		Observable<VideoBasicInfo> obs = Observable.create( s -> {
 			VideoBasicInfo videoBasicInfo = transactionTemplate.execute( status -> {
-				if(basicInfoDelay!=null){
-					try {
-						Thread.sleep(basicInfoDelay);
-					} catch (Exception e) {}
-				}
 				VideoBasicInfo v = basicInfoRepo.findOne(videoId);
 				return v;
 			});
 			s.onNext(videoBasicInfo);
 			s.onCompleted();
 		});
+		return (basicInfoDelay!=null) ? obs.delay(basicInfoDelay, TimeUnit.MILLISECONDS) : obs;
 	}
 	
 	public Observable<VideoRating> getVideoRating(Integer videoId){
-		return Observable.create( s -> {
+		Observable<VideoRating> obs =  Observable.create( s -> {
 			VideoRating videoRating = transactionTemplate.execute( status -> {
-				if(videoRatingDelay!=null){
-					try {
-						Thread.sleep(videoRatingDelay);
-					} catch (Exception e) {}
-				}
 				VideoRating v = ratingRepo.findOne(videoId);
 				return v;
 			});
 			s.onNext(videoRating);
 			s.onCompleted();
 		});
+		return (videoRatingDelay!=null) ? obs.delay(videoRatingDelay, TimeUnit.MILLISECONDS) : obs;
 	}
 	
 	public Observable<VideoInfo> getVideoFullInfo(Integer videoId){

@@ -8,15 +8,7 @@ import org.springframework.test.context.testng.AbstractTransactionalTestNGSpring
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-
-
-
-
-
 import rx.Observable;
-
-
-
 import rx.schedulers.Schedulers;
 
 import com.codependent.rx.sample4.cfg.TestConfiguration;

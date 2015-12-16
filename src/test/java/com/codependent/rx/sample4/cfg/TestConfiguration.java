@@ -1,12 +1,16 @@
 package com.codependent.rx.sample4.cfg;
 
+import java.io.IOException;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
@@ -73,5 +77,12 @@ public class TestConfiguration {
 	@Bean
 	public TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager){
 		return new TransactionTemplate(transactionManager);
+	}
+	
+	@Bean
+	public static PropertyPlaceholderConfigurer propertyConfigurer() throws IOException {
+	    PropertyPlaceholderConfigurer props = new PropertyPlaceholderConfigurer();
+	    props.setLocations(new Resource[] {new ClassPathResource("sample4.yml")});
+	    return props;
 	}
 }

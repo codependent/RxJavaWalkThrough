@@ -11,9 +11,6 @@ threadExecutor:
   corePoolSize: 20
   maxPoolSize: 40
   
-videoServiceImpl.service:
-  delay: 200
-  
 videoService:
   getVideoBasicInfo:
     delay: 200

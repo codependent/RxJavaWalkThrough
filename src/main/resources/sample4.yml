@@ -1,0 +1,5 @@
+videoService:
+  getVideoBasicInfo:
+    delay: 200
+  getVideoRating:
+    delay: 200

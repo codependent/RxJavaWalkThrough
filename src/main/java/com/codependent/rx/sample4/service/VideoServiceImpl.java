@@ -14,6 +14,7 @@ import com.codependent.rx.sample4.dao.VideoRatingRepository;
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
 import com.codependent.rx.sample4.dto.VideoInfo;
 import com.codependent.rx.sample4.dto.VideoRating;
+import com.codependent.rx.sample4.tx.ObservableTx;
 
 @Service
 public class VideoServiceImpl implements VideoService{
@@ -56,11 +57,8 @@ public class VideoServiceImpl implements VideoService{
 	}
 	
 	public Observable<VideoBasicInfo> getVideoBasicInfo(Integer videoId){
-		Observable<VideoBasicInfo> obs = Observable.create( s -> {
-			VideoBasicInfo videoBasicInfo = transactionTemplate.execute( status -> {
-				VideoBasicInfo v = basicInfoRepo.findOne(videoId);
-				return v;
-			});
+		Observable<VideoBasicInfo> obs = ObservableTx.createTx( s -> {
+			VideoBasicInfo videoBasicInfo = basicInfoRepo.findOne(videoId);
 			s.onNext(videoBasicInfo);
 			s.onCompleted();
 		});

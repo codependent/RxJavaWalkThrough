@@ -16,13 +16,14 @@ import rx.Observable;
 
 import com.codependent.rx.sample4.dao.VideoBasicInfoRepository;
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
+import com.codependent.rx.sample4.rx.ObservableTxFactory;
 import com.codependent.rx.sample4.service.VideoService;
 
 @RestController
 @EnableJpaRepositories(basePackageClasses=VideoBasicInfoRepository.class)
 @EntityScan(basePackageClasses=VideoBasicInfo.class)
 @EnableEurekaClient
-@SpringBootApplication(scanBasePackageClasses={VideoInfoMicroserviceApplication.class, VideoService.class})
+@SpringBootApplication(scanBasePackageClasses={VideoInfoMicroserviceApplication.class, VideoService.class, ObservableTxFactory.class})
 public class VideoInfoMicroserviceApplication {
 
 	@Autowired

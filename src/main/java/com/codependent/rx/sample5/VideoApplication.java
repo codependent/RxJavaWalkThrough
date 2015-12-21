@@ -10,6 +10,7 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
 import com.codependent.rx.sample4.dao.VideoBasicInfoRepository;
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
+import com.codependent.rx.sample4.rx.ObservableTxFactory;
 import com.codependent.rx.sample4.service.VideoService;
 
 @EnableJpaRepositories(basePackageClasses=VideoBasicInfoRepository.class)
@@ -28,6 +29,11 @@ public class VideoApplication {
 		executor.setCorePoolSize(corePoolSize);
 		executor.setMaxPoolSize(maxPoolSize);
 		return executor;
+	}
+	
+	@Bean
+	ObservableTxFactory observableTxFactory() {
+	    return new ObservableTxFactory();
 	}
 	
 	public static void main(String[] args) {

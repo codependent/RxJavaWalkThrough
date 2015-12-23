@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -21,11 +22,13 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.codependent.rx.sample4.dao.VideoBasicInfoRepository;
+import com.codependent.rx.sample4.rx.ObservableTxFactory;
 import com.codependent.rx.sample4.service.VideoService;
 
 @EnableTransactionManagement
@@ -33,6 +36,11 @@ import com.codependent.rx.sample4.service.VideoService;
 @EnableJpaRepositories(basePackageClasses = VideoBasicInfoRepository.class)
 public class TestConfiguration {
 
+	@Value("${threadExecutor.corePoolSize:10}")
+	private int corePoolSize;
+	@Value("${threadExecutor.maxPoolSize:20}")
+	private int maxPoolSize;
+	
 	@Bean
 	public DataSource dataSource() {
 		EmbeddedDatabaseBuilder builder = new EmbeddedDatabaseBuilder();
@@ -84,5 +92,18 @@ public class TestConfiguration {
 	    PropertyPlaceholderConfigurer props = new PropertyPlaceholderConfigurer();
 	    props.setLocations(new Resource[] {new ClassPathResource("sample4.yml")});
 	    return props;
+	}
+	
+	@Bean
+	ObservableTxFactory observableTxFactory() {
+	    return new ObservableTxFactory();
+	}
+	
+	@Bean
+	public ThreadPoolTaskExecutor executor(){
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(corePoolSize);
+		executor.setMaxPoolSize(maxPoolSize);
+		return executor;
 	}
 }

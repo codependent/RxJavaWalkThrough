@@ -2,10 +2,7 @@ package com.codependent.rx.sample5.controller;
 
 import java.util.concurrent.Callable;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -13,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import rx.Observable;
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
 
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
 import com.codependent.rx.sample4.dto.VideoInfo;
@@ -31,16 +26,6 @@ public class VideoController {
 	
 	@Autowired
 	private SyncVideoService syncvideoService;
-	
-	@Autowired
-	private TaskExecutor executor;
-	
-	private Scheduler scheduler;
-	
-	@PostConstruct
-	protected void initializeScheduler(){
-		scheduler = Schedulers.from(executor);
-	}
 	
 	@RequestMapping(value="/{videoId}", produces="application/json", params="sync=true")
 	public VideoInfo getVideoInfo(@PathVariable Integer videoId, @RequestParam(required=false) String filter){
@@ -79,13 +64,13 @@ public class VideoController {
 		DeferredResult<VideoInfo> videoInfo = new DeferredResult<VideoInfo>();
 		if("basicInfo".equalsIgnoreCase(filter)){
 			Observable<VideoBasicInfo> videoBasicInfo = videoService.getVideoBasicInfo(videoId);
-			videoBasicInfo.subscribeOn(scheduler).subscribe( m -> videoInfo.setResult(new VideoInfo(m, null)), videoInfo::setErrorResult );
+			videoBasicInfo.subscribe( m -> videoInfo.setResult(new VideoInfo(m, null)), videoInfo::setErrorResult );
 		}else if("rating".equalsIgnoreCase(filter)){
 			Observable<VideoRating> videoRating = videoService.getVideoRating(videoId);
-			videoRating.subscribeOn(scheduler).subscribe( m -> videoInfo.setResult(new VideoInfo(null, m)), videoInfo::setErrorResult );
+			videoRating.subscribe( m -> videoInfo.setResult(new VideoInfo(null, m)), videoInfo::setErrorResult );
 		}else{
 			Observable<VideoInfo> videoFullInfo = videoService.getVideoFullInfo(videoId);
-			videoFullInfo.subscribeOn(scheduler).subscribe( videoInfo::setResult, videoInfo::setErrorResult );
+			videoFullInfo.subscribe( videoInfo::setResult, videoInfo::setErrorResult );
 		}
 		return videoInfo;
 	}

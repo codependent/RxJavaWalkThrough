@@ -15,6 +15,12 @@ eureka:
     healthcheck:
       enabled: true
   
+videoService:
+  getVideoBasicInfo:
+    delay: 200
+  getVideoRating:
+    delay: 200
+  
 logging:
 #   file: /var/memento/security.log
   level:

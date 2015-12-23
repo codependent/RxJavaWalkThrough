@@ -25,19 +25,16 @@ public class VideoClient {
 	
 	private RestTemplate restTemplate = new RestTemplate();
 	
+	//--------------------------
+	//----------ASYNC-----------
+	//--------------------------
+	
 	@HystrixCommand
 	public Observable<VideoBasicInfo> addBasicInfo(VideoBasicInfo videoInfo){
 		return new ObservableResult<VideoBasicInfo>() {
 			@Override
 			public VideoBasicInfo invoke() {
-				InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEOINFO-MICROSERVICE", false);
-				String homePageUrl = ii.getHomePageUrl();
-				HttpHeaders headers = new HttpHeaders();
-				headers.add("Accept", "application/json");
-				headers.add("Content-Type", "application/json");
-				HttpEntity<VideoBasicInfo> entity = new HttpEntity<VideoBasicInfo>(videoInfo, headers);
-				ResponseEntity<VideoBasicInfo> info = restTemplate.exchange(homePageUrl+"/videos", HttpMethod.POST, entity, VideoBasicInfo.class, new Object[]{});
-				return info.getBody();
+				return invokeAddBasicInfo(videoInfo);
 			}
 		};
 	}
@@ -47,14 +44,7 @@ public class VideoClient {
 		return new ObservableResult<VideoRating>() {
 			@Override
 			public VideoRating invoke() {
-				InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEORATING-MICROSERVICE", false);
-				String homePageUrl = ii.getHomePageUrl();
-				HttpHeaders headers = new HttpHeaders();
-				headers.add("Accept", "application/json");
-				headers.add("Content-Type", "application/json");
-				HttpEntity<VideoRating> entity = new HttpEntity<VideoRating>(rating, headers);
-				ResponseEntity<VideoRating> info = restTemplate.exchange(homePageUrl+"/videos", HttpMethod.POST, entity, VideoRating.class, new Object[]{});
-				return info.getBody();
+				return invokeAddRatingSync(rating);
 			}
 		};
 	}
@@ -64,10 +54,7 @@ public class VideoClient {
 		return new ObservableResult<VideoBasicInfo>() {
 			@Override
 			public VideoBasicInfo invoke() {
-				InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEOINFO-MICROSERVICE", false);
-				String homePageUrl = ii.getHomePageUrl();
-				ResponseEntity<VideoBasicInfo> info = restTemplate.getForEntity(homePageUrl+"/videos/"+videoId, VideoBasicInfo.class);
-				return info.getBody();
+				return invokeGetVideoBasicInfoSync(videoId);
 			}
 		};
 	}
@@ -77,11 +64,70 @@ public class VideoClient {
 		return new ObservableResult<VideoRating>() {
 			@Override
 			public VideoRating invoke() {
-				InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEORATING-MICROSERVICE", false);
-				String homePageUrl = ii.getHomePageUrl();
-				ResponseEntity<VideoRating> info = restTemplate.getForEntity(homePageUrl+"/videos/"+videoId, VideoRating.class);
-				return info.getBody();
+				return invokeGetVideoRatingSync(videoId);
 			}
 		};
+	}
+	
+	
+	//-------------------------
+	//----------SYNC-----------
+	//-------------------------
+	
+	@HystrixCommand
+	public VideoBasicInfo addBasicInfoSync(VideoBasicInfo videoInfo){
+		return invokeAddBasicInfo(videoInfo);
+	}
+	
+	@HystrixCommand
+	public VideoRating addRatingSync(VideoRating rating){
+		return invokeAddRatingSync(rating);
+	}
+	
+	@HystrixCommand
+	public VideoBasicInfo getVideoBasicInfoSync(Integer videoId){
+		return invokeGetVideoBasicInfoSync(videoId);
+	}
+	
+	@HystrixCommand
+	public VideoRating getVideoRatingSync(Integer videoId){
+		return invokeGetVideoRatingSync(videoId);
+	}
+	
+	
+	private VideoBasicInfo invokeAddBasicInfo(VideoBasicInfo videoInfo){
+		InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEOINFO-MICROSERVICE", false);
+		String homePageUrl = ii.getHomePageUrl();
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Accept", "application/json");
+		headers.add("Content-Type", "application/json");
+		HttpEntity<VideoBasicInfo> entity = new HttpEntity<VideoBasicInfo>(videoInfo, headers);
+		ResponseEntity<VideoBasicInfo> info = restTemplate.exchange(homePageUrl+"/videos", HttpMethod.POST, entity, VideoBasicInfo.class, new Object[]{});
+		return info.getBody();
+	}
+	
+	private VideoRating invokeAddRatingSync(VideoRating rating){
+		InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEORATING-MICROSERVICE", false);
+		String homePageUrl = ii.getHomePageUrl();
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Accept", "application/json");
+		headers.add("Content-Type", "application/json");
+		HttpEntity<VideoRating> entity = new HttpEntity<VideoRating>(rating, headers);
+		ResponseEntity<VideoRating> info = restTemplate.exchange(homePageUrl+"/videos", HttpMethod.POST, entity, VideoRating.class, new Object[]{});
+		return info.getBody();
+	}
+	
+	private VideoBasicInfo invokeGetVideoBasicInfoSync(Integer videoId){
+		InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEOINFO-MICROSERVICE", false);
+		String homePageUrl = ii.getHomePageUrl();
+		ResponseEntity<VideoBasicInfo> info = restTemplate.getForEntity(homePageUrl+"/videos/"+videoId, VideoBasicInfo.class);
+		return info.getBody();
+	}
+	
+	private VideoRating invokeGetVideoRatingSync(Integer videoId){
+		InstanceInfo ii = discoveryClient.getNextServerFromEureka("VIDEORATING-MICROSERVICE", false);
+		String homePageUrl = ii.getHomePageUrl();
+		ResponseEntity<VideoRating> info = restTemplate.getForEntity(homePageUrl+"/videos/"+videoId, VideoRating.class);
+		return info.getBody();
 	}
 }

@@ -51,7 +51,7 @@ public class SyncVideoServiceImpl implements SyncVideoService{
 	public VideoRating getVideoRating(Integer videoId){
 		VideoRating v = ratingRepo.findOne(videoId);
 		try {
-			Thread.sleep(basicInfoDelay);
+			Thread.sleep(videoRatingDelay);
 		} catch (Exception e) {}
 		return v;
 	}

@@ -28,7 +28,10 @@ public class VideoServiceTest extends AbstractTransactionalTestNGSpringContextTe
 	@Autowired
 	private SyncVideoService videoServiceSync;
 	
-	public void testAsync(){
+	public void testAsync() throws InterruptedException{
+		
+		CountDownLatch latch = new CountDownLatch(3);
+		
 		Observable<VideoBasicInfo> videoBasicInfo = videoService.getVideoBasicInfo(2);
 		Observable<VideoRating> videoRating = videoService.getVideoRating(2);
 		Observable<VideoInfo> videoFullInfo = videoService.getVideoFullInfo(2);
@@ -36,18 +39,23 @@ public class VideoServiceTest extends AbstractTransactionalTestNGSpringContextTe
 		videoBasicInfo.subscribe( s -> {
 			System.out.printf("Loaded video basic info: %s\n", s);
 			Assert.assertEquals(s.getName(), "Star Wars - Episode 2");
+			latch.countDown();
 		});
 		
 		videoRating.subscribe( s -> {
 			System.out.printf("Loaded video rating: %s\n", s);
 			Assert.assertEquals((int)s.getRating(), 10);
+			latch.countDown();
 		});
 		
 		videoFullInfo.subscribe( s -> {
 			System.out.printf("Loaded video full info: %s\n", s);
 			Assert.assertEquals(s.getName(), "Star Wars - Episode 2");
 			Assert.assertEquals((int)s.getRating(), 10);
+			latch.countDown();
 		});
+		
+		latch.await();
 	}
 	
 	public void testAsync2() throws InterruptedException{

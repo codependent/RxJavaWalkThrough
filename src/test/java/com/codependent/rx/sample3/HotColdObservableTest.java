@@ -62,6 +62,31 @@ public class HotColdObservableTest {
 		CountDownLatch latch = new CountDownLatch(1);
 		
 		ConnectableObservable<Integer> observable = Observable.range(1, 1000)
+			.doOnCompleted(() -> {
+				latch.countDown();
+			})
+			.subscribeOn(Schedulers.io())
+			.publish();
+		
+		SensorReaderObserver sensor1 = new SensorReaderObserver();
+		SensorReaderObserver sensor2 = new SensorReaderObserver(100);
+		
+		observable.subscribe(sensor1);
+		observable.subscribe(sensor2);
+		observable.connect();
+		
+		latch.await();
+		
+		Assert.assertEquals(sensor1.getValues().size(), 1000);
+		Assert.assertEquals(sensor2.getValues().size(), 100);
+		
+	}
+	
+	public void testHotObservable3() throws InterruptedException{
+		
+		CountDownLatch latch = new CountDownLatch(1);
+		
+		ConnectableObservable<Integer> observable = Observable.range(1, 1000)
 				.doOnCompleted(() -> {
 					latch.countDown();
 				})

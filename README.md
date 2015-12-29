@@ -4,7 +4,7 @@ RxJava use examples:
 
 * **sample1**: Hello World
 * **sample2**: stopwatch
-* **sample3**: hot/cold observables + different types of subjects
+* **sample3**: hot/cold observables + different types of subjects + unsubscribing
 * **sample4**: videoService observable API
 * **sample5**: Spring Boot Video App, showing sync and async controller usage of the sample4 observable API.
   Run with `--spring.config.name=sample5-application`

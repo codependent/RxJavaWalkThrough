@@ -11,7 +11,7 @@ import rx.Subscriber;
 public class ObservableTxFactory {
 	
 	public final <T> Observable<T> create(Observable.OnSubscribe<T> f) {
-        return new ObservableTx<>(this, f);
+        return new ObservableTx<T>(this, f);
     }
 
 	@Transactional

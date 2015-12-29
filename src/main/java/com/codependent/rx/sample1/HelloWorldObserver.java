@@ -1,9 +1,14 @@
 package com.codependent.rx.sample1;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import rx.Observer;
 
 public class HelloWorldObserver implements Observer<String>{
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(HelloWorldObserver.class);
+	
 	private String message;
 	private boolean failed;
 	private boolean completed;
@@ -22,17 +27,17 @@ public class HelloWorldObserver implements Observer<String>{
 	
 	public void onCompleted() {
 		completed = true;
-		System.out.printf("OBSERVER %s FINISHED\n", this);
+		LOGGER.info("OBSERVER [{}] FINISHED", this);
 	}
 
 	public void onError(Throwable e) {
 		failed = true;
-		System.err.printf("OBSERVER %s ERROR: %s\n", this, e);
+		LOGGER.error("OBSERVER [{}]: ", this, e);
 	}
 
 	public void onNext(String t) {
 		message = t;
-		System.out.printf("OBSERVER %s GOT: %s\n", this, message);
+		LOGGER.info("OBSERVER [{}] GOT: [{}]", this, message);
 	}
 
 }

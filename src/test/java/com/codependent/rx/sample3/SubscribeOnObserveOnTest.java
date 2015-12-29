@@ -18,26 +18,28 @@ public class SubscribeOnObserveOnTest {
 	
 	public void testObserveOn() throws InterruptedException{
 		LOGGER.info("Starting");
-		SensorReaderObserver sensor = new SensorReaderObserver();
-		SensorObservable sensorObservable = new SensorObservable(1, 1000);
+		CountDownLatch latch = new CountDownLatch(1);
+		SensorReaderObserver sensor = new SensorReaderObserver(()->{
+			latch.countDown();});
+		SensorObservable sensorObservable = new SensorObservable(1, 100);
 		Observable<Integer> observable = sensorObservable
 			.doOnTerminate(() -> {
 				LOGGER.info("doOnTerminate!!!");
-				while(sensor.getValues().size()!=1000){
-					try{Thread.sleep(100);
-					}catch(InterruptedException e){}
-				}
-				Assert.assertEquals(sensor.getValues().size(), 1000);
 			}).observeOn(Schedulers.computation());
 		
 		observable.subscribe(sensor);
+		
+		LOGGER.info("Waiting");
+		latch.await();
+		LOGGER.info("Waking up");
+		Assert.assertEquals(sensor.getValues().size(), 100);
 		LOGGER.info("Finished");
 	}
 	
 	public void testSubscribeOn() throws InterruptedException{
 		LOGGER.info("Starting");
 		CountDownLatch latch = new CountDownLatch(1);
-		Observable<Integer> observable = Observable.range(1, 1000)
+		Observable<Integer> observable = Observable.range(1, 100)
 			.doOnCompleted(() -> {
 				LOGGER.info("doOnCompleted!!!");
 				latch.countDown();
@@ -49,30 +51,31 @@ public class SubscribeOnObserveOnTest {
 		LOGGER.info("Waiting");
 		latch.await();
 		LOGGER.info("Waking up");
-		Assert.assertEquals(sensor1.getValues().size(), 1000);
+		Assert.assertEquals(sensor1.getValues().size(), 100);
 		LOGGER.info("Finished");
 	}
 	
 	public void testSubscribeOnObserveOn() throws InterruptedException{
 		LOGGER.info("Starting");
 		CountDownLatch latch = new CountDownLatch(1);
-		SensorObservable sensorObservable = new SensorObservable(1, 1000);
+		SensorObservable sensorObservable = new SensorObservable(1, 100);
 		Observable<Integer> observable = sensorObservable
 			.doOnCompleted(() -> {
 				LOGGER.info("doOnCompleted!!!");
-				latch.countDown();
 			})
 			.subscribeOn(Schedulers.computation())
 			.observeOn(Schedulers.computation());
 		
-		SensorReaderObserver sensor1 = new SensorReaderObserver();
-		observable.subscribe(sensor1);
+		SensorReaderObserver sensor = new SensorReaderObserver(()->{
+			latch.countDown();
+		});
+		observable.subscribe(sensor);
 		
 		LOGGER.info("Waiting");
 		latch.await();
 		LOGGER.info("Waking up");
 		
-		Assert.assertEquals(sensor1.getValues().size(), 1000);
+		Assert.assertEquals(sensor.getValues().size(), 100);
 	}
 	
 }

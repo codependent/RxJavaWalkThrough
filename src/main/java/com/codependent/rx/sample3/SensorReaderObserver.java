@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import rx.Subscriber;
+import rx.functions.Action0;
 
 public class SensorReaderObserver extends Subscriber<Integer>{
 
@@ -14,11 +15,21 @@ public class SensorReaderObserver extends Subscriber<Integer>{
 	
 	private Integer maxInterested;
 	private List<Integer> values = new ArrayList<Integer>();
+	private Action0 onCompleted;
 
 	public SensorReaderObserver(){}
 	
 	public SensorReaderObserver(Integer maxInterested){
 		this.maxInterested = maxInterested;
+	}
+	
+	public SensorReaderObserver(final Action0 onCompleted){
+		this.onCompleted = onCompleted;
+	}
+	
+	public SensorReaderObserver(Integer maxInterested, final Action0 onCompleted){
+		this.maxInterested = maxInterested;
+		this.onCompleted = onCompleted;
 	}
 	
 	public List<Integer> getValues() {
@@ -27,6 +38,9 @@ public class SensorReaderObserver extends Subscriber<Integer>{
 	
 	public void onCompleted() {
 		LOGGER.info("OBSERVER [{}] FINISHED", this);
+		if(onCompleted!=null){
+			onCompleted.call();
+		}
 	}
 	
 	public void onError(Throwable e) {

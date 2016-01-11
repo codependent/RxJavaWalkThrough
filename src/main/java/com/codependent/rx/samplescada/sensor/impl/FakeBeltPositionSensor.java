@@ -7,35 +7,37 @@ import rx.schedulers.Schedulers;
 import com.codependent.rx.samplescada.sensor.PositionSensor;
 import com.codependent.rx.samplescada.sensor.Signal;
 
-public class FakeJamMachineBeltPositionSensor extends PositionSensor implements Observer<FakeSignal>{
+public class FakeBeltPositionSensor extends PositionSensor implements Observer<Signal>{
 
 	protected Double objectPosition;
 	protected Double sensorPosition;
+	protected Double[] range;
 	protected Double beltSpeed;
-	private Boolean beltStarted;
+	private Signal watchedSignal;
+	private Signal signal;
 	
-	public FakeJamMachineBeltPositionSensor(Double sensorPosition, Double objectStartingPosition, Double beltSpeed) {
-		super(sensorPosition);
+	public FakeBeltPositionSensor(Double[] range, Double objectStartingPosition, Double beltSpeed, Signal watchedSignal) {
+		super(range[1]);
 		this.objectPosition = objectStartingPosition;
 		this.beltSpeed = beltSpeed;
+		this.watchedSignal = watchedSignal;
+		this.range = range;
+		
 		Observable<Signal> obs = Observable.<Signal>create( (s) -> {
-			logger.info("create()");
-			logger.info("objectPosition {}", objectPosition);
-			logger.info("sensorPosition {}", super.sensorPosition);
-			while(beltStarted){
+			while(true){
 				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
+					Thread.sleep(500);
+				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				objectPosition += beltSpeed;
-				logger.info("objectPosition2 {}", objectPosition);
-				if(objectPosition.doubleValue() == super.sensorPosition.doubleValue()){
-					s.onNext(new Signal(Signal.Type.JAR_IN_JARMACHINE));
+				if(signal!=null){
+					s.onNext(signal);
+					signal = null;
 				}
 			}
 		}).subscribeOn(Schedulers.io());
 		observable = obs.publish();
+		observable.connect();
 	}
 	
 	public Double getSensorPosition() {
@@ -57,13 +59,8 @@ public class FakeJamMachineBeltPositionSensor extends PositionSensor implements 
 	}
 
 	@Override
-	public void onNext(FakeSignal s) {
-		if(s.getType() == FakeSignal.Type.BELT_STARTED){
-			beltStarted = true;
-			observable.connect();
-		}else if(s.getType() == FakeSignal.Type.BELT_STOPPED){
-			beltStarted = false;
-		}
+	public void onNext(Signal s) {
+		signal = s;
 	}
 	
 	@Override
@@ -72,6 +69,14 @@ public class FakeJamMachineBeltPositionSensor extends PositionSensor implements 
 
 	@Override
 	public void onError(Throwable e) {
+	}
+	
+	public Double[] getRange() {
+		return range;
+	}
+	
+	public Signal getWatchedSignal() {
+		return watchedSignal;
 	}
 
 }

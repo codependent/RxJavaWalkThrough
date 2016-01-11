@@ -21,7 +21,8 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 		this.positionSensors = positionSensors;
 	}
 	
-	public abstract void addJar();
+	public abstract void addEmptyJar();
+	public abstract void removeFullJar();
 
 	public boolean isEmptyBelt() {
 		return emptyBelt;

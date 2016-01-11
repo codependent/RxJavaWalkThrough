@@ -1,5 +1,8 @@
 package com.codependent.rx.samplescada.machine;
 
+import java.util.List;
+
+import com.codependent.rx.samplescada.sensor.PositionSensor;
 import com.codependent.rx.samplescada.sensor.Signal;
 
 import rx.Observer;
@@ -10,10 +13,12 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 	protected double lenght;
 	protected double speed;
 	protected boolean emptyBelt = true;
+	protected List<PositionSensor> positionSensors;
 	
-	public Belt(double length, double speed){
+	public Belt(double length, double speed, List<PositionSensor> positionSensors){
 		this.lenght = length;
 		this.speed = speed;
+		this.positionSensors = positionSensors;
 	}
 	
 	public abstract void addJar();

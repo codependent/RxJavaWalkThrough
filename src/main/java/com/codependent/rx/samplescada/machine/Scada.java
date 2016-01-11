@@ -1,5 +1,6 @@
 package com.codependent.rx.samplescada.machine;
 
+import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 import rx.Observer;
@@ -27,7 +28,8 @@ public class Scada extends Machine implements Observer<Signal>{
 	@Override
 	public void doOnStart() {
 		jamMachineBeltSensor.start();
-		
+		jamMachineBeltSensor.getObservable().subscribe(this);
+		jamMachine.getObservable().subscribe(this);
 	}
 
 	@Override
@@ -36,17 +38,10 @@ public class Scada extends Machine implements Observer<Signal>{
 	}
 	
 	public void startProduction(){
-		
-		jamMachineBeltSensor.getObservable().subscribe(this);
-		jamMachine.getObservable().subscribe(this);
-		
 		if(belt.isEmptyBelt()){
 			belt.addJar();
 		}
-		
 		belt.start();
-		
-		jamMachineBeltSensor.getObservable().connect();
 	}
 	
 	public void stopProduction(){
@@ -55,8 +50,8 @@ public class Scada extends Machine implements Observer<Signal>{
 	}
 
 	public static void main(String[] args) throws InterruptedException {
-		Belt belt = new FakeBelt(10.0, 1.0);
-		PositionSensor jamMachineBeltSensor = new FakeJamMachineBeltPositionSensor(belt, 5.0, 0.0);
+		PositionSensor jamMachineBeltSensor = new FakeJamMachineBeltPositionSensor(5.0, 0.0, 1.0);
+		Belt belt = new FakeBelt(10.0, 1.0, Arrays.asList(new PositionSensor[]{jamMachineBeltSensor}));
 		
 		JamMachine jamMachine = new FakeJamMachine();
 		

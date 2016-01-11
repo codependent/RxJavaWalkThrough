@@ -26,6 +26,10 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 		return lenght;
 	}
 	
+	public double getSpeed() {
+		return speed;
+	}
+	
 	public void doOnStart(){
 		doOnBeltStart();
 	}
@@ -47,7 +51,7 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 	
 	@Override
 	public void onCompleted() {
-		System.out.println("Completed");
+		logger.debug("Completed");
 	}
 	
 	@Override

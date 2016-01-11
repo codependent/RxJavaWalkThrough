@@ -1,19 +1,38 @@
 package com.codependent.rx.samplescada.sensor.impl;
 
 import rx.Observable;
-import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
+import com.codependent.rx.samplescada.machine.Belt;
 import com.codependent.rx.samplescada.sensor.PositionSensor;
 import com.codependent.rx.samplescada.sensor.Signal;
 
 public class FakeJamMachineBeltPositionSensor extends PositionSensor{
 
-	private Double objectPosition;
+	protected Double objectPosition;
 	protected Double sensorPosition;
 	
-	public FakeJamMachineBeltPositionSensor(Double sensorPosition) {
-		super(sensorPosition);
+	public FakeJamMachineBeltPositionSensor(Belt belt, Double sensorPosition, Double objectStartingPosition) {
+		super(belt, sensorPosition);
+		this.objectPosition = objectStartingPosition;
+		Observable<Signal> obs = Observable.<Signal>create( (s) -> {
+			logger.info("FakeJamMachineBeltPositionSensor - create()");
+			logger.info("FakeJamMachineBeltPositionSensor - objectPosition {}", objectPosition);
+			logger.info("FakeJamMachineBeltPositionSensor - sensorPosition {}", super.sensorPosition);
+			while(belt.getState() == State.STARTED ){
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				objectPosition += belt.getSpeed();
+				logger.info("FakeJamMachineBeltPositionSensor - objectPosition2 {}", objectPosition);
+				if(objectPosition.doubleValue() == super.sensorPosition.doubleValue()){
+					s.onNext(new Signal(Signal.Type.JAR_IN_JARMACHINE));
+				}
+			}
+		}).subscribeOn(Schedulers.io());
+		observable = obs.publish();
 	}
 	
 	public Double getSensorPosition() {
@@ -25,20 +44,13 @@ public class FakeJamMachineBeltPositionSensor extends PositionSensor{
 	}
 
 	@Override
-	public void doOnStart() {
-		Observable<Signal> obs = Observable.<Signal>create( (s) -> {
-			if(objectPosition != null && objectPosition == sensorPosition){
-				s.onNext(new Signal(Signal.Type.JAR_IN_JARMACHINE));
-				s.onCompleted();
-			}
-		}).subscribeOn(Schedulers.io());
-		observable = obs.publish();
-		observable.connect();
+	public void doOnStart(){
+		logger.info("doOnStart");
 	}
 
 	@Override
 	public void doOnStop() {
-		
+		logger.info("doOnStop");
 	}
 
 }

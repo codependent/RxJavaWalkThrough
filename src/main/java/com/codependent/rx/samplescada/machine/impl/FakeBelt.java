@@ -5,19 +5,17 @@ import com.codependent.rx.samplescada.machine.Belt;
 public class FakeBelt extends Belt{
 
 	protected double speed;
-	protected double objectPosition;
 	
 	public FakeBelt(double length, double speed) {
 		super(length, speed);
-		this.objectPosition = 0;
 	}
 
 	@Override
 	public void doOnBeltStart() {
-		while(getState() == State.STARTED){
+		/*while(getState() == State.STARTED){
 			
 			
-		}
+		}*/
 	}
 
 	@Override
@@ -26,6 +24,7 @@ public class FakeBelt extends Belt{
 
 	@Override
 	public void addJar() {
+		logger.info("Adding jar");
 		if(isEmptyBelt()){
 			emptyBelt = false;
 		}

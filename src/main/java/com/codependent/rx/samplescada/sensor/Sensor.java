@@ -1,9 +1,8 @@
 package com.codependent.rx.samplescada.sensor;
 
-import com.codependent.rx.samplescada.machine.Machine;
-
-import rx.Observable;
 import rx.observables.ConnectableObservable;
+
+import com.codependent.rx.samplescada.machine.Machine;
 
 public abstract class Sensor extends Machine{
 
@@ -12,7 +11,7 @@ public abstract class Sensor extends Machine{
 	protected Sensor(){
 	}
 	
-	public Observable<Signal> getObservable() {
+	public ConnectableObservable<Signal> getObservable() {
 		return observable;
 	}
 

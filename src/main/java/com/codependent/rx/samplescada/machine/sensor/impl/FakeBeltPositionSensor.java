@@ -4,8 +4,8 @@ import rx.Observable;
 import rx.Observer;
 import rx.schedulers.Schedulers;
 
+import com.codependent.rx.samplescada.machine.Signal;
 import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
-import com.codependent.rx.samplescada.machine.sensor.Signal;
 
 public class FakeBeltPositionSensor extends PositionSensor implements Observer<Signal>{
 
@@ -16,8 +16,8 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 	private Signal watchedSignal;
 	private Signal signal;
 	
-	public FakeBeltPositionSensor(Double[] range, Double objectStartingPosition, Double beltSpeed, Signal watchedSignal) {
-		super(range[1]);
+	public FakeBeltPositionSensor(String id, Double[] range, Double objectStartingPosition, Double beltSpeed, Signal watchedSignal) {
+		super(id, range[1]);
 		this.objectPosition = objectStartingPosition;
 		this.beltSpeed = beltSpeed;
 		this.watchedSignal = watchedSignal;

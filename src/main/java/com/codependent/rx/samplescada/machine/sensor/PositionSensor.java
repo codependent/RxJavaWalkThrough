@@ -7,8 +7,8 @@ public abstract class PositionSensor extends Sensor{
 
 	protected Double sensorPosition;
 	
-	public PositionSensor(Double sensorPosition){
-		super();
+	public PositionSensor(String id, Double sensorPosition){
+		super(id);
 		this.sensorPosition = sensorPosition;
 	}
 	

@@ -6,8 +6,8 @@ import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import com.codependent.rx.samplescada.machine.JamMachine;
-import com.codependent.rx.samplescada.machine.sensor.Signal;
-import com.codependent.rx.samplescada.machine.sensor.Signal.Type;
+import com.codependent.rx.samplescada.machine.Signal;
+import com.codependent.rx.samplescada.machine.Signal.Type;
 
 @Component
 public class FakeJamMachine extends JamMachine{
@@ -15,6 +15,7 @@ public class FakeJamMachine extends JamMachine{
 	private int level;
 	
 	public FakeJamMachine(){
+		super("jamMachine");
 		Observable<Signal> obs = Observable.<Signal>create( (s) -> {
 			while(state != State.STOPPED){
 				try {

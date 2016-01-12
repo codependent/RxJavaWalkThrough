@@ -5,7 +5,7 @@ import java.util.List;
 import rx.Observer;
 
 import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
-import com.codependent.rx.samplescada.machine.sensor.Signal;
+import com.codependent.rx.samplescada.machine.Signal;
 
 
 public abstract class Belt extends Machine implements Observer<Signal>{
@@ -15,7 +15,8 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 	protected boolean emptyBelt = true;
 	protected List<PositionSensor> positionSensors;
 	
-	public Belt(double length, double speed, List<PositionSensor> positionSensors){
+	public Belt(String id, double length, double speed, List<PositionSensor> positionSensors){
+		super(id);
 		this.lenght = length;
 		this.speed = speed;
 		this.positionSensors = positionSensors;

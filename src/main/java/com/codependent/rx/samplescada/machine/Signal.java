@@ -1,9 +1,13 @@
-package com.codependent.rx.samplescada.machine.sensor;
+package com.codependent.rx.samplescada.machine;
 
 
 public class Signal {
 
 	public enum Type {
+		MACHINE_STARTED,
+		MACHINE_STOPPED,
+		MACHINE_OPERATING,
+		MACHINE_PAUSED,		
 		JAR_IN_JARMACHINE, 
 		JAR_IN_JARMACHINE_FILLING_INFO,
 		JAR_IN_BELT_POSITION,

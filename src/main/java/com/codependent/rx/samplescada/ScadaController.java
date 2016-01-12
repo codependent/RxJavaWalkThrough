@@ -1,40 +1,48 @@
 package com.codependent.rx.samplescada;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
 
 import com.codependent.rx.samplescada.machine.Scada;
 
 @Controller
+@RequestMapping("/scada")
 public class ScadaController {
+	
+	private Logger logger = LoggerFactory.getLogger(getClass());
 	
 	@Autowired
 	private Scada scada;
 	
-	@RequestMapping("/start")
-	@ResponseStatus(HttpStatus.OK)
-	public void start(){
-		scada.start();
+	@RequestMapping
+	public void scada(){
 	}
 	
-	@RequestMapping("/stop")
-	@ResponseStatus(HttpStatus.OK)
+	@MessageMapping("/start")
+	public void start() {
+		logger.info("received msg start");
+		scada.start();
+	}	
+	
+	@MessageMapping("/stop")
 	public void stop(){
-		scada.start();
+		logger.info("received msg stop");
+		scada.stop();
 	}
 	
-	@RequestMapping("/startOperating")
-	@ResponseStatus(HttpStatus.OK)
+	@MessageMapping("/startOperating")
 	public void startOperating(){
+		logger.info("received msg start operating");
 		scada.startOperating();
 	}
 	
-	@RequestMapping("/stopOperating")
-	@ResponseStatus(HttpStatus.OK)
+	@MessageMapping("/stopOperating")
 	public void stopOperating(){
+		logger.info("received msg stop operating");
 		scada.stopOperating();
 	}
 	

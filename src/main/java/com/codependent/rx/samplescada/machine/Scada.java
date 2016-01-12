@@ -5,16 +5,16 @@ import java.util.concurrent.CountDownLatch;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import rx.Observer;
 import rx.schedulers.Schedulers;
 
+import com.codependent.rx.samplescada.machine.Signal.Type;
 import com.codependent.rx.samplescada.machine.impl.FakeBelt;
 import com.codependent.rx.samplescada.machine.impl.FakeJamMachine;
 import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
-import com.codependent.rx.samplescada.machine.sensor.Signal;
-import com.codependent.rx.samplescada.machine.sensor.Signal.Type;
 import com.codependent.rx.samplescada.machine.sensor.impl.FakeBeltPositionSensor;
 
 @Component
@@ -28,10 +28,14 @@ public class Scada extends Machine implements Observer<Signal>{
 	
 	private PositionSensor beltEndSensor;
 	
+	@Autowired(required=false)
+	private SimpMessagingTemplate messagingTemplate;
+	
 	private CountDownLatch latch = new CountDownLatch(1);
 
 	@Autowired
 	public Scada(Belt belt, JamMachine jamMachine, @Qualifier("jamMachineBeltSensor") PositionSensor jamMachineBeltSensor, @Qualifier("beltEndSensor") PositionSensor beltEndSensor){
+		super("scada");
 		this.belt = belt;
 		this.jamMachine = jamMachine;
 		this.jamMachineBeltSensor = jamMachineBeltSensor;
@@ -42,14 +46,18 @@ public class Scada extends Machine implements Observer<Signal>{
 	public void doOnStart() {
 		jamMachineBeltSensor.start();
 		jamMachineBeltSensor.getObservable().observeOn(Schedulers.io()).subscribe(this);
+		jamMachineBeltSensor.getLifecycleObservable().subscribe(this);
 		
 		beltEndSensor.start();
 		beltEndSensor.getObservable().observeOn(Schedulers.io()).subscribe(this);
+		beltEndSensor.getLifecycleObservable().subscribe(this);
 		
 		jamMachine.start();
 		jamMachine.getObservable().observeOn(Schedulers.io()).subscribe(this);
+		jamMachine.getLifecycleObservable().subscribe(this);
 		
 		belt.start();
+		belt.getLifecycleObservable().subscribe(this);
 	}
 
 	@Override
@@ -74,9 +82,9 @@ public class Scada extends Machine implements Observer<Signal>{
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
-		PositionSensor jamMachineBeltSensor = new FakeBeltPositionSensor(new Double[]{0.0, 4.9}, 0.0, 1.0, new Signal(Type.JAR_IN_JARMACHINE));
-		PositionSensor beltEndSensor = new FakeBeltPositionSensor(new Double[]{5.0, 10.0}, 5.0, 1.0, new Signal(Type.JAR_IN_BELT_END));
-		Belt belt = new FakeBelt(10.0, 1.0, Arrays.asList(new PositionSensor[]{jamMachineBeltSensor,beltEndSensor}));
+		PositionSensor jamMachineBeltSensor = new FakeBeltPositionSensor("jamMachineBeltSensor", new Double[]{0.0, 4.9}, 0.0, 1.0, new Signal(Type.JAR_IN_JARMACHINE));
+		PositionSensor beltEndSensor = new FakeBeltPositionSensor("beltEndSensor", new Double[]{5.0, 10.0}, 5.0, 1.0, new Signal(Type.JAR_IN_BELT_END));
+		Belt belt = new FakeBelt("belt", 10.0, 1.0, Arrays.asList(new PositionSensor[]{jamMachineBeltSensor,beltEndSensor}));
 		
 		JamMachine jamMachine = new FakeJamMachine();
 		
@@ -102,6 +110,9 @@ public class Scada extends Machine implements Observer<Signal>{
 	@Override
 	public void onNext(Signal s) {
 		logger.info("{}",s);
+		if(messagingTemplate!=null){
+			messagingTemplate.convertAndSend("/topic/ui", s);
+		}
 		if(s.getType() == Type.JAR_IN_JARMACHINE_FILLING_INFO){
 			
 		}else if(s.getType() == Type.JAR_IN_JARMACHINE){

@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
+		<script src="https://cdn.rawgit.com/jmesnil/stomp-websocket/master/lib/stomp.min.js"></script>
+		<script src="//cdn.jsdelivr.net/sockjs/1.0.3/sockjs.min.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function(){
+				$("#start").on('click', function(e){
+					stompClient.send("/app/start", {}, null);
+				});
+				$("#stop").on('click', function(e){
+					stompClient.send("/app/start", {}, null);
+				});
+				$("#startOperating").on('click', function(e){
+					stompClient.send("/app/startOperating", {}, null);
+				});
+				$("#stopOperating").on('click', function(e){
+					stompClient.send("/app/stopOperating", {}, null);
+				});
+			});
+		
+			var socket = new SockJS("/scada/ws");
+			var stompClient = Stomp.over(socket);
+			stompClient.connect({}, function(frame) {
+				console.log('CONNECTED! ' + frame);
+			    stompClient.subscribe("/topic/ui", function(message) {
+			    	console.log("got message "+message);
+			    	var msg = JSON.parse(message.body);
+			    	$("#message").text(msg.type + "-" + msg.info);
+			    });
+			});
+		</script>
+	</head>
+	<body>
+		<div>
+			<span id="message"/>
+		</div>
+		<div>
+			<input id="start" type="button" value="Start"/>
+			<input id="stop" type="button" value="Stop"/>
+			<input id="startOperating" type="button" value="Start Operating"/>
+			<input id="stopOperating" type="button" value="Stop Operating"/>
+		</div>
+	</body>
+</html>

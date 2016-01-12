@@ -2,17 +2,15 @@ package com.codependent.rx.samplescada.machine.impl;
 
 import java.util.List;
 
-
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
-
 import com.codependent.rx.samplescada.machine.Belt;
+import com.codependent.rx.samplescada.machine.Signal;
+import com.codependent.rx.samplescada.machine.Signal.Type;
 import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
-import com.codependent.rx.samplescada.machine.sensor.Signal;
-import com.codependent.rx.samplescada.machine.sensor.Signal.Type;
 import com.codependent.rx.samplescada.machine.sensor.impl.FakeBeltPositionSensor;
 
 public class FakeBelt extends Belt{
@@ -21,8 +19,8 @@ public class FakeBelt extends Belt{
 	protected ConnectableObservable<Signal> observable;
 	private Subscription subscription;
 	
-	public FakeBelt(double length, double speed, List<PositionSensor> positionSensors) {
-		super(length, speed, positionSensors);
+	public FakeBelt(String id, double length, double speed, List<PositionSensor> positionSensors) {
+		super(id, length, speed, positionSensors);
 	}
 
 	@Override

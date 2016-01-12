@@ -3,6 +3,9 @@ spring:
     name: jam-scada
   datasource:
     initialize: false
+  thymeleaf:
+    cache: false
+    prefix: classpath:/com/codependent/rx/samplescada/templates/
 
 server:
   port: 9999

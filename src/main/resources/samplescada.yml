@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: jam-scada
+  datasource:
+    initialize: false
+
+server:
+  port: 9999
+  
+logging:
+#   file: /var/memento/security.log
+  level:
+    com.codependent: 'DEBUG'

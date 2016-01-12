@@ -28,6 +28,7 @@ public class FakeJamMachine extends JamMachine{
 						}
 						level += 10;
 						logger.info("Filling jar - level {}%", level);
+						s.onNext(new Signal(Type.JAR_IN_JARMACHINE_FILLING_INFO, level+""));
 					}
 					if(level == 100){
 						s.onNext(new Signal(Type.JARMACHINE_JAR_FILLED));

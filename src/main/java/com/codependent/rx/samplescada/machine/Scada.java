@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
 import rx.Observer;
+import rx.schedulers.Schedulers;
 
 import com.codependent.rx.samplescada.machine.impl.FakeBelt;
 import com.codependent.rx.samplescada.machine.impl.FakeJamMachine;
@@ -32,13 +33,13 @@ public class Scada extends Machine implements Observer<Signal>{
 	@Override
 	public void doOnStart() {
 		jamMachineBeltSensor.start();
-		jamMachineBeltSensor.getObservable().subscribe(this);
+		jamMachineBeltSensor.getObservable().observeOn(Schedulers.io()).subscribe(this);
 		
 		beltEndSensor.start();
-		beltEndSensor.getObservable().subscribe(this);
+		beltEndSensor.getObservable().observeOn(Schedulers.io()).subscribe(this);
 		
 		jamMachine.start();
-		jamMachine.getObservable().subscribe(this);
+		jamMachine.getObservable().observeOn(Schedulers.io()).subscribe(this);
 		
 		belt.start();
 	}
@@ -92,7 +93,10 @@ public class Scada extends Machine implements Observer<Signal>{
 
 	@Override
 	public void onNext(Signal s) {
-		if(s.getType() == Type.JAR_IN_JARMACHINE){
+		logger.info("{}",s);
+		if(s.getType() == Type.JAR_IN_JARMACHINE_FILLING_INFO){
+			
+		}else if(s.getType() == Type.JAR_IN_JARMACHINE){
 			belt.stopOperating();
 			jamMachine.startOperating();
 		}else if(s.getType() == Type.JARMACHINE_JAR_FILLED){

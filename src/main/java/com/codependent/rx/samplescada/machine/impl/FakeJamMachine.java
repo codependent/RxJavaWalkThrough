@@ -1,12 +1,15 @@
 package com.codependent.rx.samplescada.machine.impl;
 
+import org.springframework.stereotype.Component;
+
 import rx.Observable;
 import rx.schedulers.Schedulers;
 
 import com.codependent.rx.samplescada.machine.JamMachine;
-import com.codependent.rx.samplescada.sensor.Signal;
-import com.codependent.rx.samplescada.sensor.Signal.Type;
+import com.codependent.rx.samplescada.machine.sensor.Signal;
+import com.codependent.rx.samplescada.machine.sensor.Signal.Type;
 
+@Component
 public class FakeJamMachine extends JamMachine{
 
 	private int level;

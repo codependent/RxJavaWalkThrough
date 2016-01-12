@@ -2,7 +2,7 @@ package com.codependent.rx.samplescada.machine;
 
 import rx.observables.ConnectableObservable;
 
-import com.codependent.rx.samplescada.sensor.Signal;
+import com.codependent.rx.samplescada.machine.sensor.Signal;
 
 
 

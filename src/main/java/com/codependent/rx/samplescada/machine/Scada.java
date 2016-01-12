@@ -3,27 +3,35 @@ package com.codependent.rx.samplescada.machine;
 import java.util.Arrays;
 import java.util.concurrent.CountDownLatch;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
+
 import rx.Observer;
 import rx.schedulers.Schedulers;
 
 import com.codependent.rx.samplescada.machine.impl.FakeBelt;
 import com.codependent.rx.samplescada.machine.impl.FakeJamMachine;
-import com.codependent.rx.samplescada.sensor.PositionSensor;
-import com.codependent.rx.samplescada.sensor.Signal;
-import com.codependent.rx.samplescada.sensor.Signal.Type;
-import com.codependent.rx.samplescada.sensor.impl.FakeBeltPositionSensor;
+import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
+import com.codependent.rx.samplescada.machine.sensor.Signal;
+import com.codependent.rx.samplescada.machine.sensor.Signal.Type;
+import com.codependent.rx.samplescada.machine.sensor.impl.FakeBeltPositionSensor;
 
+@Component
 public class Scada extends Machine implements Observer<Signal>{
 
 	private Belt belt;
+	
 	private JamMachine jamMachine;
+	
 	private PositionSensor jamMachineBeltSensor;
+	
 	private PositionSensor beltEndSensor;
 	
 	private CountDownLatch latch = new CountDownLatch(1);
 
-	
-	public Scada(Belt belt, JamMachine jamMachine, PositionSensor jamMachineBeltSensor, PositionSensor beltEndSensor){
+	@Autowired
+	public Scada(Belt belt, JamMachine jamMachine, @Qualifier("jamMachineBeltSensor") PositionSensor jamMachineBeltSensor, @Qualifier("beltEndSensor") PositionSensor beltEndSensor){
 		this.belt = belt;
 		this.jamMachine = jamMachine;
 		this.jamMachineBeltSensor = jamMachineBeltSensor;

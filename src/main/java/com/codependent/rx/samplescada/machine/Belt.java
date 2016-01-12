@@ -2,10 +2,10 @@ package com.codependent.rx.samplescada.machine;
 
 import java.util.List;
 
-import com.codependent.rx.samplescada.sensor.PositionSensor;
-import com.codependent.rx.samplescada.sensor.Signal;
-
 import rx.Observer;
+
+import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
+import com.codependent.rx.samplescada.machine.sensor.Signal;
 
 
 public abstract class Belt extends Machine implements Observer<Signal>{

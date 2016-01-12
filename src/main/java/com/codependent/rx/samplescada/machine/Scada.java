@@ -79,7 +79,7 @@ public class Scada extends Machine implements Observer<Signal>{
 		Thread.sleep(4000);
 		scada.logger.info("HALT!!!!!!");
 		scada.stopOperating();
-		Thread.sleep(10000);
+		Thread.sleep(4000);
 		scada.startOperating();
 		Thread.sleep(4000);
 		scada.logger.info("HALT!!!!!!");

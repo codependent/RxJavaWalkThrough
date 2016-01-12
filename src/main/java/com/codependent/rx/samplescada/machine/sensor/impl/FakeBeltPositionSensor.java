@@ -23,7 +23,7 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 		this.watchedSignal = watchedSignal;
 		this.range = range;
 		
-		Observable<Signal> obs = Observable.<Signal>create( (s) -> {
+		observable = Observable.<Signal>create( (s) -> {
 			while(state==State.STARTED){
 				try {
 					Thread.sleep(500);
@@ -31,12 +31,15 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 					e.printStackTrace();
 				}
 				if(signal!=null){
+					logger.debug("{}",signal);
 					s.onNext(signal);
 					signal = null;
 				}
 			}
-		}).subscribeOn(Schedulers.io());
-		observable = obs.publish();
+		})
+		.observeOn(Schedulers.io())
+		.subscribeOn(Schedulers.io())
+		.publish();
 	}
 	
 	public Double getSensorPosition() {

@@ -2,14 +2,17 @@ package com.codependent.rx.samplescada.machine.impl;
 
 import java.util.List;
 
+
 import rx.Observable;
 import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
+
 import com.codependent.rx.samplescada.machine.Belt;
 import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
 import com.codependent.rx.samplescada.machine.sensor.Signal;
+import com.codependent.rx.samplescada.machine.sensor.Signal.Type;
 import com.codependent.rx.samplescada.machine.sensor.impl.FakeBeltPositionSensor;
 
 public class FakeBelt extends Belt{
@@ -48,11 +51,11 @@ public class FakeBelt extends Belt{
 						FakeBeltPositionSensor fSensor = (FakeBeltPositionSensor)sensor;
 						if(state == State.OPERATING && objectPosition >= fSensor.getRange()[0] && objectPosition <= fSensor.getRange()[1]){
 							objectPosition += speed;
-							Signal watchedSignal = fSensor.getWatchedSignal();
-							watchedSignal.setInfo(objectPosition+"");
+							Signal signal = new Signal(Type.JAR_IN_BELT_POSITION, objectPosition+"");
+							s.onNext(signal);
 							logger.info("objectPosition {} {}", objectPosition, new Object[]{fSensor.getRange()});
 							if(objectPosition.doubleValue() >= fSensor.getRange()[1].doubleValue()){
-								s.onNext(watchedSignal);
+								s.onNext(fSensor.getWatchedSignal());
 								s.onCompleted();
 								completed = true;
 								subscription = null;

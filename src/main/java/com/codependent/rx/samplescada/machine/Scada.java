@@ -110,6 +110,8 @@ public class Scada extends Machine implements Observer<Signal>{
 		}else if(s.getType() == Type.JARMACHINE_JAR_FILLED){
 			jamMachine.stopOperating();
 			belt.startOperating();
+		}else if(s.getType() == Type.JAR_IN_BELT_POSITION){
+			
 		}else if(s.getType() == Type.JAR_IN_BELT_END){
 			belt.stopOperating();
 			belt.removeFullJar();
@@ -120,12 +122,12 @@ public class Scada extends Machine implements Observer<Signal>{
 	
 	@Override
 	public void onCompleted() {
-		// TODO Auto-generated method stub
+
 	}
 
 	@Override
 	public void onError(Throwable e) {
-		// TODO Auto-generated method stub
+
 	}
 
 }

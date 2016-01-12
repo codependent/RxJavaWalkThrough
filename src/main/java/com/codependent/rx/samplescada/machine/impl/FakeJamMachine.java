@@ -9,25 +9,31 @@ import com.codependent.rx.samplescada.sensor.Signal.Type;
 
 public class FakeJamMachine extends JamMachine{
 
-	private boolean filling;
+	private int level;
 	
 	public FakeJamMachine(){
 		Observable<Signal> obs = Observable.<Signal>create( (s) -> {
-			while(true){
+			while(state != State.STOPPED){
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(100);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
 				if(filling){
-					logger.info("Filling jar");
-					try {
-						Thread.sleep(1000);
-					} catch (Exception e) {
-						e.printStackTrace();
+					while(state == State.OPERATING && level < 100){
+						try {
+							Thread.sleep(200);
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+						level += 10;
+						logger.info("Filling jar - level {}%", level);
 					}
-					s.onNext(new Signal(Type.JARMACHINE_JAR_FILLED));
-					filling = false;
+					if(level == 100){
+						s.onNext(new Signal(Type.JARMACHINE_JAR_FILLED));
+						filling = false;
+						level = 0;
+					}
 				}
 			}
 		}).subscribeOn(Schedulers.io());
@@ -37,12 +43,23 @@ public class FakeJamMachine extends JamMachine{
 	@Override
 	public void doOnStart() {
 		observable.connect();
-		filling = true;
 	}
 	
 	@Override
 	public void doOnStop() {
-		// TODO Auto-generated method stub
 		super.doOnStop();
 	}
+	
+	@Override
+	public void doOnStartOperating() {
+		filling = true;
+	}
+	
+	@Override
+	public void doOnStopOperating() {
+		super.doOnStopOperating();
+	}
+	
+	
+
 }

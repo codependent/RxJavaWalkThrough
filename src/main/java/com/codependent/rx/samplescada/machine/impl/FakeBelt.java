@@ -3,6 +3,7 @@ package com.codependent.rx.samplescada.machine.impl;
 import java.util.List;
 
 import rx.Observable;
+import rx.Subscription;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
@@ -15,6 +16,7 @@ public class FakeBelt extends Belt{
 
 	protected Double objectPosition = 0.0;
 	protected ConnectableObservable<Signal> observable;
+	private Subscription subscription;
 	
 	public FakeBelt(double length, double speed, List<PositionSensor> positionSensors) {
 		super(length, speed, positionSensors);
@@ -22,25 +24,38 @@ public class FakeBelt extends Belt{
 
 	@Override
 	public void doOnBeltStart() {
-		logger.info("doOnBeltStart() - objectPosition {}", objectPosition);
+		
+	}
+
+	@Override
+	public void doOnBeltStop() {
+		
+	}
+	
+	@Override
+	public void doOnBeltStartOperating() {
+		logger.info("doOnBeltStartOperating() - objectPosition {}", objectPosition);
 		Observable<Signal> observable = Observable.<Signal>create( (s) -> {
 			boolean completed = false;
-			while(!completed && state == State.STARTED){
+			while(!completed){
 				try {
 					Thread.sleep(500);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				for (PositionSensor sensor : positionSensors) {
-					FakeBeltPositionSensor fSensor = (FakeBeltPositionSensor)sensor;
-					if(state == State.STARTED && objectPosition >= fSensor.getRange()[0] && objectPosition <= fSensor.getRange()[1]){
-						objectPosition += speed;
-						logger.info("objectPosition {} {}", objectPosition, new Object[]{fSensor.getRange()});
-						if(objectPosition.doubleValue() >= fSensor.getRange()[1].doubleValue()){
-							s.onNext(fSensor.getWatchedSignal());
-							s.onCompleted();
-							completed = true;
-							break;
+				if(state == State.OPERATING){
+					for (PositionSensor sensor : positionSensors) {
+						FakeBeltPositionSensor fSensor = (FakeBeltPositionSensor)sensor;
+						if(state == State.OPERATING && objectPosition >= fSensor.getRange()[0] && objectPosition <= fSensor.getRange()[1]){
+							objectPosition += speed;
+							logger.info("objectPosition {} {}", objectPosition, new Object[]{fSensor.getRange()});
+							if(objectPosition.doubleValue() >= fSensor.getRange()[1].doubleValue()){
+								s.onNext(fSensor.getWatchedSignal());
+								s.onCompleted();
+								completed = true;
+								subscription = null;
+								break;
+							}
 						}
 					}
 				}
@@ -50,15 +65,15 @@ public class FakeBelt extends Belt{
 		for (PositionSensor sensor : positionSensors) {
 			if(sensor instanceof FakeBeltPositionSensor){
 				FakeBeltPositionSensor fSensor = (FakeBeltPositionSensor)sensor;
-				if(objectPosition >= fSensor.getRange()[0] && objectPosition <= fSensor.getRange()[1]){
-					observable.subscribe((FakeBeltPositionSensor)sensor);
+				if(subscription == null && objectPosition >= fSensor.getRange()[0] && objectPosition <= fSensor.getRange()[1]){
+					subscription = observable.subscribe((FakeBeltPositionSensor)sensor);
 				}
 			}
 		}
 	}
-
+	
 	@Override
-	public void doOnBeltStop() {
+	public void doOnBeltStopOperating() {
 		
 	}
 

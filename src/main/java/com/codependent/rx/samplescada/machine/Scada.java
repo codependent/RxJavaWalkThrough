@@ -18,7 +18,9 @@ public class Scada extends Machine implements Observer<Signal>{
 	private JamMachine jamMachine;
 	private PositionSensor jamMachineBeltSensor;
 	private PositionSensor beltEndSensor;
-	private CountDownLatch latch = new CountDownLatch(1); 
+	
+	private CountDownLatch latch = new CountDownLatch(1);
+
 	
 	public Scada(Belt belt, JamMachine jamMachine, PositionSensor jamMachineBeltSensor, PositionSensor beltEndSensor){
 		this.belt = belt;
@@ -35,26 +37,33 @@ public class Scada extends Machine implements Observer<Signal>{
 		beltEndSensor.start();
 		beltEndSensor.getObservable().subscribe(this);
 		
+		jamMachine.start();
 		jamMachine.getObservable().subscribe(this);
+		
+		belt.start();
 	}
 
 	@Override
-	public void doOnStop() {
-		
-	}
+	public void doOnStop() {}
 	
-	public void startProduction(){
-		if(belt.isEmptyBelt()){
-			belt.addEmptyJar();
+	@Override
+	public void doOnStartOperating() {
+		if(jamMachine.isFilling()){
+			jamMachine.startOperating();
+		}else{ 
+			if(belt.isEmptyBelt()){
+				belt.addEmptyJar();
+			}
+			belt.startOperating();
 		}
-		belt.start();
 	}
 	
-	public void stopProduction(){
-		belt.stop();
-		jamMachine.stop();
+	@Override
+	public void doOnStopOperating() {
+		jamMachine.stopOperating();
+		belt.stopOperating();
 	}
-
+	
 	public static void main(String[] args) throws InterruptedException {
 		PositionSensor jamMachineBeltSensor = new FakeBeltPositionSensor(new Double[]{0.0, 4.9}, 0.0, 1.0, new Signal(Type.JAR_IN_JARMACHINE));
 		PositionSensor beltEndSensor = new FakeBeltPositionSensor(new Double[]{5.0, 10.0}, 5.0, 1.0, new Signal(Type.JAR_IN_BELT_END));
@@ -65,7 +74,18 @@ public class Scada extends Machine implements Observer<Signal>{
 		Scada scada = new Scada(belt, jamMachine, jamMachineBeltSensor, beltEndSensor);
 		scada.start();
 		
-		scada.startProduction();
+		scada.startOperating();
+		
+		Thread.sleep(4000);
+		scada.logger.info("HALT!!!!!!");
+		scada.stopOperating();
+		Thread.sleep(10000);
+		scada.startOperating();
+		Thread.sleep(4000);
+		scada.logger.info("HALT!!!!!!");
+		scada.stopOperating();
+		Thread.sleep(4000);
+		scada.startOperating();
 		
 		scada.latch.await();
 	}
@@ -73,16 +93,16 @@ public class Scada extends Machine implements Observer<Signal>{
 	@Override
 	public void onNext(Signal s) {
 		if(s.getType() == Type.JAR_IN_JARMACHINE){
-			belt.stop();
-			jamMachine.start();
+			belt.stopOperating();
+			jamMachine.startOperating();
 		}else if(s.getType() == Type.JARMACHINE_JAR_FILLED){
-			jamMachine.stop();
-			belt.start();
+			jamMachine.stopOperating();
+			belt.startOperating();
 		}else if(s.getType() == Type.JAR_IN_BELT_END){
-			belt.stop();
+			belt.stopOperating();
 			belt.removeFullJar();
 			belt.addEmptyJar();
-			belt.start();
+			belt.startOperating();
 		}
 	}
 	
@@ -95,4 +115,5 @@ public class Scada extends Machine implements Observer<Signal>{
 	public void onError(Throwable e) {
 		// TODO Auto-generated method stub
 	}
+
 }

@@ -9,21 +9,30 @@ import com.codependent.rx.samplescada.sensor.Signal;
 public abstract class JamMachine extends Machine{
 
 	protected ConnectableObservable<Signal> observable;
+	protected boolean filling;
 	
 	@Override
 	public void doOnStart() {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public void doOnStop() {
-		// TODO Auto-generated method stub
-		
 	}
-
+	
+	@Override
+	public void doOnStartOperating() {
+	}
+	
+	@Override
+	public void doOnStopOperating() {
+	}
+	
 	public ConnectableObservable<Signal> getObservable() {
 		return observable;
+	}
+	
+	public boolean isFilling() {
+		return filling;
 	}
 	
 }

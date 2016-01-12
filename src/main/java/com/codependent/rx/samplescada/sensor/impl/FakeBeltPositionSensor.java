@@ -24,7 +24,7 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 		this.range = range;
 		
 		Observable<Signal> obs = Observable.<Signal>create( (s) -> {
-			while(true){
+			while(state==State.STARTED){
 				try {
 					Thread.sleep(500);
 				} catch (Exception e) {
@@ -37,7 +37,6 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 			}
 		}).subscribeOn(Schedulers.io());
 		observable = obs.publish();
-		observable.connect();
 	}
 	
 	public Double getSensorPosition() {
@@ -51,11 +50,22 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 	@Override
 	public void doOnStart(){
 		logger.info("doOnStart");
+		observable.connect();
 	}
 
 	@Override
 	public void doOnStop() {
 		logger.info("doOnStop");
+	}
+	
+	@Override
+	public void doOnStartOperating() {
+		logger.info("doOnStartOperating");
+	}
+	
+	@Override
+	public void doOnStopOperating() {
+		logger.info("doOnStopOperating");
 	}
 
 	@Override

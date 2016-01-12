@@ -36,16 +36,30 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 		return speed;
 	}
 	
+	@Override
 	public void doOnStart(){
 		doOnBeltStart();
 	}
 	
+	@Override
 	public void doOnStop(){
 		doOnBeltStop();
 	}
 	
+	@Override
+	public void doOnStartOperating(){
+		doOnBeltStartOperating();
+	}
+	
+	@Override
+	public void doOnStopOperating(){
+		doOnBeltStopOperating();
+	}
+	
 	public abstract void doOnBeltStart();
 	public abstract void doOnBeltStop();
+	public abstract void doOnBeltStartOperating();
+	public abstract void doOnBeltStopOperating();
 	
 	@Override
 	public void onNext(Signal s) {

@@ -8,7 +8,7 @@ spring:
     prefix: classpath:/com/codependent/rx/samplescada/templates/
 
 server:
-  port: 9999
+  port: 10000
   
 logging:
 #   file: /var/memento/security.log

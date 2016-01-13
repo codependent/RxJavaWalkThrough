@@ -4,37 +4,53 @@
 		<script src="https://code.jquery.com/jquery-2.2.0.min.js"></script>
 		<script src="https://cdn.rawgit.com/jmesnil/stomp-websocket/master/lib/stomp.min.js"></script>
 		<script src="//cdn.jsdelivr.net/sockjs/1.0.3/sockjs.min.js"></script>
+		<script src="/js/scada.js"></script>
 		<script type="text/javascript">
 			$(document).ready(function(){
+				
+				var mainCanvas = $("#scada")[0];
+				var scada = new Scada(mainCanvas);
+		    	scada.draw();
+				
 				$("#start").on('click', function(e){
-					stompClient.send("/app/start", {}, null);
+					scada.start();
 				});
 				$("#stop").on('click', function(e){
-					stompClient.send("/app/stop", {}, null);
+					scada.stop();
 				});
 				$("#startOperating").on('click', function(e){
-					stompClient.send("/app/startOperating", {}, null);
+					scada.startOperating();
 				});
 				$("#stopOperating").on('click', function(e){
-					stompClient.send("/app/stopOperating", {}, null);
+					scada.stopOperating();
 				});
+				
+				/*console.log("add")
+				scada.addJar();
+				console.log("post")
+				//scada.moveJar(2.0)
+				 */
+				function drawCircle() {
+				    // draw the circle
+				    /*var radius = 175;
+				    mainCanvasContext.beginPath();
+				    mainCanvasContext.arc(225, 225, radius, 0, Math.PI * 2, false);
+				    mainCanvasContext.closePath();
+				     */
+				    // color in the circle
+				    /* mainCanvasContext.fillStyle = "#006699";
+				    mainCanvasContext.fill();*/
+				}
 			});
 		
-			var socket = new SockJS("/scada/ws");
-			var stompClient = Stomp.over(socket);
-			stompClient.connect({}, function(frame) {
-				console.log('CONNECTED! ' + frame);
-			    stompClient.subscribe("/topic/ui", function(message) {
-			    	console.log("got message "+message);
-			    	var msg = JSON.parse(message.body);
-			    	$("#message").text(msg.type + "-" + msg.info);
-			    });
-			});
 		</script>
 	</head>
 	<body>
 		<div>
 			<span id="message"/>
+		</div>
+		<div id="container">
+		    <canvas id="scada" height="400" width="800"></canvas>
 		</div>
 		<div>
 			<input id="start" type="button" value="Start"/>

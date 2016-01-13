@@ -10,7 +10,7 @@
 					stompClient.send("/app/start", {}, null);
 				});
 				$("#stop").on('click', function(e){
-					stompClient.send("/app/start", {}, null);
+					stompClient.send("/app/stop", {}, null);
 				});
 				$("#startOperating").on('click', function(e){
 					stompClient.send("/app/startOperating", {}, null);

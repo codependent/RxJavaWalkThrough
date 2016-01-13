@@ -16,13 +16,13 @@ public abstract class Machine{
 	
 	public enum State { STARTED, STOPPED, OPERATING, PAUSED};
 	
-	protected State state = State.STOPPED;
+	protected volatile State state = State.STOPPED;
 	
 	private String id;
 	
 	private Observable<Signal> lifecycleObservable;
 	
-	private Signal lifeCycleSignal;
+	private volatile Signal lifeCycleSignal;
 	
 	public Machine(String id){
 		this.id = id;
@@ -38,8 +38,9 @@ public abstract class Machine{
 					lifeCycleSignal = null;
 				}
 			}
-		}).observeOn(Schedulers.io())
-		.subscribeOn(Schedulers.io());
+		})
+		.subscribeOn(Schedulers.io())
+		.observeOn(Schedulers.io());
 	}
 	
 	public void start(){

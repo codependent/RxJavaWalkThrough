@@ -14,7 +14,7 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 	protected Double[] range;
 	protected Double beltSpeed;
 	private Signal watchedSignal;
-	private Signal signal;
+	private volatile Signal signal;
 	
 	public FakeBeltPositionSensor(String id, Double[] range, Double objectStartingPosition, Double beltSpeed, Signal watchedSignal) {
 		super(id, range[1]);
@@ -37,8 +37,8 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 				}
 			}
 		})
-		.observeOn(Schedulers.io())
 		.subscribeOn(Schedulers.io())
+		.observeOn(Schedulers.io())
 		.publish();
 	}
 	

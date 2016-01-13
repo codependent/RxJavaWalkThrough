@@ -9,7 +9,6 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Component;
 
 import rx.Observer;
-import rx.schedulers.Schedulers;
 
 import com.codependent.rx.samplescada.machine.Signal.Type;
 import com.codependent.rx.samplescada.machine.impl.FakeBelt;
@@ -45,15 +44,15 @@ public class Scada extends Machine implements Observer<Signal>{
 	@Override
 	public void doOnStart() {
 		jamMachineBeltSensor.start();
-		jamMachineBeltSensor.getObservable().observeOn(Schedulers.io()).subscribe(this);
+		jamMachineBeltSensor.getObservable().subscribe(this);
 		jamMachineBeltSensor.getLifecycleObservable().subscribe(this);
 		
 		beltEndSensor.start();
-		beltEndSensor.getObservable().observeOn(Schedulers.io()).subscribe(this);
+		beltEndSensor.getObservable().subscribe(this);
 		beltEndSensor.getLifecycleObservable().subscribe(this);
 		
 		jamMachine.start();
-		jamMachine.getObservable().observeOn(Schedulers.io()).subscribe(this);
+		jamMachine.getObservable().subscribe(this);
 		jamMachine.getLifecycleObservable().subscribe(this);
 		
 		belt.start();
@@ -133,12 +132,12 @@ public class Scada extends Machine implements Observer<Signal>{
 	
 	@Override
 	public void onCompleted() {
-
+		logger.info("****************** ON COMPLETED *******************");
 	}
 
 	@Override
 	public void onError(Throwable e) {
-
+		logger.error("****************** ON ERROR ******************* {}",  e);
 	}
 
 }

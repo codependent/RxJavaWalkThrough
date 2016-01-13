@@ -63,7 +63,8 @@ public class FakeBelt extends Belt{
 					}
 				}
 			}
-		}).subscribeOn(Schedulers.io());
+		})
+		.subscribeOn(Schedulers.io());
 		
 		for (PositionSensor sensor : positionSensors) {
 			if(sensor instanceof FakeBeltPositionSensor){

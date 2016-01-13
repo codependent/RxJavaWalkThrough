@@ -41,7 +41,9 @@ public class FakeJamMachine extends JamMachine{
 					}
 				}
 			}
-		}).subscribeOn(Schedulers.io());
+		})
+		.subscribeOn(Schedulers.io())
+		.observeOn(Schedulers.io());
 		observable = obs.publish();
 	}
 	

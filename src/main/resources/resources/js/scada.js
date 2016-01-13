@@ -20,7 +20,7 @@ function Scada(scadaCanvas){
 	    	console.log("got message "+message);
 	    	var msg = JSON.parse(message.body);
 	    	$("#message").text(msg.type + "-" + msg.info);
-	    	if(msg.type == "JAR_IN_BELT_POSITION" && msg.info == "1.0"){
+	    	if(msg.type == "JAR_IN_BELT_POSITION" && msg.info < "1.0"){
 	    		self.addJar();
 	    	}else if(msg.type == "JAR_IN_BELT_POSITION"){
 	    		self.moveJar(msg.info);
@@ -40,7 +40,7 @@ function Scada(scadaCanvas){
 			if(jar1!=null){
 				jar1.draw(canvasContext);
 			}
-		},100);
+		},40);
 		
 	}
 	

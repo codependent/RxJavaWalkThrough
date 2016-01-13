@@ -31,12 +31,12 @@ public class ScadaConfiguration extends AbstractWebSocketMessageBrokerConfigurer
 	
 	@Bean
 	public PositionSensor beltEndSensor(){
-		return new FakeBeltPositionSensor("beltEndSensor", new Double[]{5.0, 10.0}, 5.0, 1.0, new Signal(Type.JAR_IN_BELT_END));
+		return new FakeBeltPositionSensor("beltEndSensor", new Double[]{4.9, 10.0}, 5.0, 1.0, new Signal(Type.JAR_IN_BELT_END));
 	}
 	
 	@Bean
 	public Belt belt(){
-		return new FakeBelt("belt", 10.0, 1.0, positionSensors);
+		return new FakeBelt("belt", 10.0, 0.01, positionSensors);
 	}
 
 	@Override

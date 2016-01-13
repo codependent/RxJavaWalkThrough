@@ -82,8 +82,8 @@ public class Scada extends Machine implements Observer<Signal>{
 	
 	public static void main(String[] args) throws InterruptedException {
 		PositionSensor jamMachineBeltSensor = new FakeBeltPositionSensor("jamMachineBeltSensor", new Double[]{0.0, 4.9}, 0.0, 1.0, new Signal(Type.JAR_IN_JARMACHINE));
-		PositionSensor beltEndSensor = new FakeBeltPositionSensor("beltEndSensor", new Double[]{5.0, 10.0}, 5.0, 1.0, new Signal(Type.JAR_IN_BELT_END));
-		Belt belt = new FakeBelt("belt", 10.0, 1.0, Arrays.asList(new PositionSensor[]{jamMachineBeltSensor,beltEndSensor}));
+		PositionSensor beltEndSensor = new FakeBeltPositionSensor("beltEndSensor", new Double[]{4.9, 10.0}, 5.0, 1.0, new Signal(Type.JAR_IN_BELT_END));
+		Belt belt = new FakeBelt("belt", 10.0, 0.10, Arrays.asList(new PositionSensor[]{jamMachineBeltSensor,beltEndSensor}));
 		
 		JamMachine jamMachine = new FakeJamMachine();
 		

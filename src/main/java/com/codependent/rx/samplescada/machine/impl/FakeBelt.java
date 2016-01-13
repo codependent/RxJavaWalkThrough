@@ -40,14 +40,16 @@ public class FakeBelt extends Belt{
 			boolean completed = false;
 			while(!completed){
 				try {
-					Thread.sleep(500);
+					Thread.sleep(50);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
 				if(state == State.OPERATING){
+					logger.info("doOnBeltStartOperating() - objectPosition22 {}", objectPosition);
 					for (PositionSensor sensor : positionSensors) {
 						FakeBeltPositionSensor fSensor = (FakeBeltPositionSensor)sensor;
 						if(state == State.OPERATING && objectPosition >= fSensor.getRange()[0] && objectPosition <= fSensor.getRange()[1]){
+							logger.info("doOnBeltStartOperating() - objectPosition33 {}", objectPosition);
 							objectPosition += speed;
 							Signal signal = new Signal(Type.JAR_IN_BELT_POSITION, objectPosition+"");
 							s.onNext(signal);
@@ -69,6 +71,7 @@ public class FakeBelt extends Belt{
 		for (PositionSensor sensor : positionSensors) {
 			if(sensor instanceof FakeBeltPositionSensor){
 				FakeBeltPositionSensor fSensor = (FakeBeltPositionSensor)sensor;
+				logger.info(" op{} 0-{} 1-{}", objectPosition, fSensor.getRange()[0], fSensor.getRange()[1]);
 				if(subscription == null && objectPosition >= fSensor.getRange()[0] && objectPosition <= fSensor.getRange()[1]){
 					subscription = observable.subscribe((FakeBeltPositionSensor)sensor);
 				}

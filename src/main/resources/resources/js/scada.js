@@ -20,10 +20,10 @@ function Scada(scadaCanvas){
 	    	console.log("got message "+message);
 	    	var msg = JSON.parse(message.body);
 	    	$("#message").text(msg.type + "-" + msg.info);
-	    	if(msg.type == "JAR_IN_BELT_POSITION" && msg.info < "1.0"){
+	    	if(msg.type == "JAR_IN_BELT_POSITION" && parseFloat(msg.info) < 0.1){
 	    		self.addJar();
 	    	}else if(msg.type == "JAR_IN_BELT_POSITION"){
-	    		self.moveJar(msg.info);
+	    		self.moveJar(parseFloat(msg.info));
 	    	}
 	    });
 	});
@@ -45,7 +45,7 @@ function Scada(scadaCanvas){
 	}
 	
 	this.addJar = function(){
-		jar1 = new Jar(0);
+		jar1 = new Jar(0.0);
 	}
 	
 	this.moveJar = function(positionX){
@@ -97,7 +97,7 @@ function JamMachine(){
 function Jar(posX){
 	
 	this.state = "empty";
-	this.positionX = posX * 600/10 + 100;
+	this.positionX = (posX * 600/10) + 100;
 	var self = this;
 	
 	this.draw = function(canvasContext){
@@ -110,7 +110,10 @@ function Jar(posX){
 	}
 	
 	this.setPositionX = function(posX){
-		this.positionX = posX * 600/10 + 100;
+		console.log("*****>")
+		console.log((posX * 600/10) + 100);
+		console.log("*****<")
+		this.positionX = (posX * 600/10) + 100;
 	}
 	
 	

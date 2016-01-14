@@ -47,6 +47,8 @@ function Scada(scadaCanvas){
 		    		}
 		    	}else if(msg.type == "JAR_IN_JARMACHINE_FILLING_INFO" && msg.info == 100){
 		    		self.setJarState(true);
+		    	}else if(msg.type == "JAR_IN_BELT_END"){
+		    		self.removeJarFromBelt();
 		    	}
 		    });
 		});
@@ -75,6 +77,10 @@ function Scada(scadaCanvas){
 	
 	this.setJarState = function(filled){
 		jar1.setState(filled);
+	}
+	
+	this.removeJarFromBelt = function(){
+		jar1 = undefined;
 	}
 	
 	this.start = function(){

@@ -14,7 +14,7 @@ function Scada(scadaCanvas){
 	var self = this;
 	
 	initializeDrawing();
-	initializeWebSocket();
+	startWebSocket();
 	
 	function initializeDrawing(){
 		/*canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -29,7 +29,7 @@ function Scada(scadaCanvas){
 		}
 	}
 	
-	function initializeWebSocket(){
+	function startWebSocket(){
 		stompClient.connect({}, function(frame) {
 			console.log('WS CONNECTED! ' + frame);
 		    stompClient.subscribe("/topic/ui", function(message) {
@@ -45,6 +45,8 @@ function Scada(scadaCanvas){
 		    		}else{
 		    			self.addJar(parseFloat(msg.info));
 		    		}
+		    	}else if(msg.type == "JAR_IN_JARMACHINE_FILLING_INFO" && msg.info == 100){
+		    		self.setJarState(true);
 		    	}
 		    });
 		});
@@ -60,7 +62,7 @@ function Scada(scadaCanvas){
 	}
 	
 	this.addJar = function(positionX){
-		jar1 = new Jar(positionX);
+		jar1 = new Jar(positionX, false);
 	}
 	
 	this.hasJar = function(){
@@ -69,6 +71,10 @@ function Scada(scadaCanvas){
 	
 	this.moveJar = function(positionX){
 		jar1.setPositionX(positionX);
+	}
+	
+	this.setJarState = function(filled){
+		jar1.setState(filled);
 	}
 	
 	this.start = function(){
@@ -113,22 +119,30 @@ function JamMachine(){
 	
 }
 
-function Jar(posX){
+function Jar(posX, filled){
 	
-	this.state = "empty";
+	this.state = !filled ? "empty" : "filled";
 	this.positionX = (posX * 600/10) + 100;
 	var self = this;
 	
 	this.draw = function(canvasContext){
 		var marmaladeJar = new Image() 
-	    marmaladeJar.src = "/img/mermeladaVacio.gif" 
-	    	marmaladeJar.onload = function() {
+		if(this.state == "empty"){
+			 marmaladeJar.src = "/img/mermeladaVacio.gif" 
+		}else{
+			 marmaladeJar.src = "/img/mermeladaSinTapa.gif" 
+		}
+    	marmaladeJar.onload = function() {
 			canvasContext.drawImage(marmaladeJar, self.positionX, 170, 25, 30);
     	};
 	}
 	
 	this.setPositionX = function(posX){
 		this.positionX = (posX * 600/10) + 100;
+	}
+	
+	this.setState = function(filled){
+		this.state = !filled ? "empty" : "filled";
 	}
 	
 	

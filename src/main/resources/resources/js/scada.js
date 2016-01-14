@@ -4,7 +4,6 @@ function Scada(scadaCanvas){
     var jamMachine = new JamMachine();
     var jar1;
     
-	var interval;
 	var canvas = scadaCanvas;
 	var canvasContext = canvas.getContext("2d");
 	var canvasWidth = canvas.width;
@@ -12,40 +11,60 @@ function Scada(scadaCanvas){
 	
 	var socket = new SockJS("/scada/ws");
 	var stompClient = Stomp.over(socket);
-	var self = this
+	var self = this;
 	
-	stompClient.connect({}, function(frame) {
-		console.log('CONNECTED! ' + frame);
-	    stompClient.subscribe("/topic/ui", function(message) {
-	    	console.log("got message "+message);
-	    	var msg = JSON.parse(message.body);
-	    	$("#message").text(msg.type + "-" + msg.info);
-	    	if(msg.type == "JAR_IN_BELT_POSITION" && parseFloat(msg.info) < 0.1){
-	    		self.addJar();
-	    	}else if(msg.type == "JAR_IN_BELT_POSITION"){
-	    		self.moveJar(parseFloat(msg.info));
-	    	}
-	    });
-	});
+	initializeDrawing();
+	initializeWebSocket();
 	
-	this.draw = function(){
+	function initializeDrawing(){
 		/*canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 	    //color in the background
 		canvasContext.fillStyle = "#eee";
 		canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);*/
-		interval = setInterval(function(){
-			conveyor.draw(canvasContext);
-			jamMachine.draw(canvasContext);
-			canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-			if(jar1!=null){
-				jar1.draw(canvasContext);
-			}
-		},40);
-		
+		conveyor.draw(canvasContext);
+		jamMachine.draw(canvasContext);
+		canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+		if(jar1!=null){
+			jar1.draw(canvasContext);
+		}
 	}
 	
-	this.addJar = function(){
-		jar1 = new Jar(0.0);
+	function initializeWebSocket(){
+		stompClient.connect({}, function(frame) {
+			console.log('WS CONNECTED! ' + frame);
+		    stompClient.subscribe("/topic/ui", function(message) {
+		    	console.log("----- WS MESSAGE -----");
+		    	console.log(message);
+		    	console.log("----------------------");
+		    	self.refreshDrawing();
+		    	var msg = JSON.parse(message.body);
+		    	$("#message").text(msg.type + "-" + msg.info);
+		    	if(msg.type == "JAR_IN_BELT_POSITION"){
+		    		if(self.hasJar()){
+		    			self.moveJar(parseFloat(msg.info));
+		    		}else{
+		    			self.addJar(parseFloat(msg.info));
+		    		}
+		    	}
+		    });
+		});
+	}
+	
+	this.refreshDrawing = function(){
+		conveyor.draw(canvasContext);
+		jamMachine.draw(canvasContext);
+		canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
+		if(jar1!=null){
+			jar1.draw(canvasContext);
+		}
+	}
+	
+	this.addJar = function(positionX){
+		jar1 = new Jar(positionX);
+	}
+	
+	this.hasJar = function(){
+		return (typeof jar1 !== 'undefined');
 	}
 	
 	this.moveJar = function(positionX){
@@ -104,15 +123,11 @@ function Jar(posX){
 		var marmaladeJar = new Image() 
 	    marmaladeJar.src = "/img/mermeladaVacio.gif" 
 	    	marmaladeJar.onload = function() {
-			console.log(self.positionX)
 			canvasContext.drawImage(marmaladeJar, self.positionX, 170, 25, 30);
     	};
 	}
 	
 	this.setPositionX = function(posX){
-		console.log("*****>")
-		console.log((posX * 600/10) + 100);
-		console.log("*****<")
 		this.positionX = (posX * 600/10) + 100;
 	}
 	

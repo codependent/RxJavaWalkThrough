@@ -51,23 +51,23 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 	}
 
 	@Override
-	public void doOnStart(){
+	protected void doOnStart(){
 		logger.info("doOnStart");
 		observable.connect();
 	}
 
 	@Override
-	public void doOnStop() {
+	protected void doOnStop() {
 		logger.info("doOnStop");
 	}
 	
 	@Override
-	public void doOnStartOperating() {
+	protected void doOnStartOperating() {
 		logger.info("doOnStartOperating");
 	}
 	
 	@Override
-	public void doOnStopOperating() {
+	protected void doOnStopOperating() {
 		logger.info("doOnStopOperating");
 	}
 

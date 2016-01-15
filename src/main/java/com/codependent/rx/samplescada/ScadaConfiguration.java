@@ -11,9 +11,11 @@ import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBr
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 import com.codependent.rx.samplescada.machine.Belt;
+import com.codependent.rx.samplescada.machine.JarDeposit;
 import com.codependent.rx.samplescada.machine.Signal;
 import com.codependent.rx.samplescada.machine.Signal.Type;
 import com.codependent.rx.samplescada.machine.impl.FakeBelt;
+import com.codependent.rx.samplescada.machine.impl.FakeJarDeposit;
 import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
 import com.codependent.rx.samplescada.machine.sensor.impl.FakeBeltPositionSensor;
 
@@ -37,6 +39,11 @@ public class ScadaConfiguration extends AbstractWebSocketMessageBrokerConfigurer
 	@Bean
 	public Belt belt(){
 		return new FakeBelt("belt", 10.0, 0.05, positionSensors);
+	}
+	
+	@Bean
+	public JarDeposit jarDeposit(){
+		return new FakeJarDeposit("jarDeposit", 1);
 	}
 
 	@Override

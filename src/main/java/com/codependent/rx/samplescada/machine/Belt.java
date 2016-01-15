@@ -12,7 +12,7 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 	
 	protected double lenght;
 	protected double speed;
-	protected boolean emptyBelt = true;
+	protected boolean empty = true;
 	protected List<PositionSensor> positionSensors;
 	
 	public Belt(String id, double length, double speed, List<PositionSensor> positionSensors){
@@ -25,8 +25,8 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 	public abstract void addEmptyJar();
 	public abstract void removeFullJar();
 
-	public boolean isEmptyBelt() {
-		return emptyBelt;
+	public boolean isEmpty() {
+		return empty;
 	}
 	
 	public double getLenght() {
@@ -38,29 +38,29 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 	}
 	
 	@Override
-	public void doOnStart(){
+	protected void doOnStart(){
 		doOnBeltStart();
 	}
 	
 	@Override
-	public void doOnStop(){
+	protected void doOnStop(){
 		doOnBeltStop();
 	}
 	
 	@Override
-	public void doOnStartOperating(){
+	protected void doOnStartOperating(){
 		doOnBeltStartOperating();
 	}
 	
 	@Override
-	public void doOnStopOperating(){
+	protected void doOnStopOperating(){
 		doOnBeltStopOperating();
 	}
 	
-	public abstract void doOnBeltStart();
-	public abstract void doOnBeltStop();
-	public abstract void doOnBeltStartOperating();
-	public abstract void doOnBeltStopOperating();
+	protected abstract void doOnBeltStart();
+	protected abstract void doOnBeltStop();
+	protected abstract void doOnBeltStartOperating();
+	protected abstract void doOnBeltStopOperating();
 	
 	@Override
 	public void onNext(Signal s) {

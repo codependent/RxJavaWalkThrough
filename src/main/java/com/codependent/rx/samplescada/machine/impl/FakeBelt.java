@@ -24,17 +24,17 @@ public class FakeBelt extends Belt{
 	}
 
 	@Override
-	public void doOnBeltStart() {
+	protected void doOnBeltStart() {
 		
 	}
 
 	@Override
-	public void doOnBeltStop() {
+	protected void doOnBeltStop() {
 		
 	}
 	
 	@Override
-	public void doOnBeltStartOperating() {
+	protected void doOnBeltStartOperating() {
 		logger.info("doOnBeltStartOperating() - objectPosition {}", objectPosition);
 		Observable<Signal> observable = Observable.<Signal>create( (s) -> {
 			boolean completed = false;
@@ -45,11 +45,11 @@ public class FakeBelt extends Belt{
 					e.printStackTrace();
 				}
 				if(state == State.OPERATING){
-					logger.info("doOnBeltStartOperating() - objectPosition22 {}", objectPosition);
+					logger.info("doOnBeltStartOperating() - objectPosition {}", objectPosition);
 					for (PositionSensor sensor : positionSensors) {
 						FakeBeltPositionSensor fSensor = (FakeBeltPositionSensor)sensor;
 						if(state == State.OPERATING && objectPosition >= fSensor.getRange()[0] && objectPosition <= fSensor.getRange()[1]){
-							logger.info("doOnBeltStartOperating() - objectPosition33 {}", objectPosition);
+							logger.info("doOnBeltStartOperating() - objectPosition {}", objectPosition);
 							objectPosition += speed;
 							Signal signal = new Signal(Type.JAR_IN_BELT_POSITION, objectPosition+"");
 							s.onNext(signal);
@@ -71,7 +71,7 @@ public class FakeBelt extends Belt{
 		for (PositionSensor sensor : positionSensors) {
 			if(sensor instanceof FakeBeltPositionSensor){
 				FakeBeltPositionSensor fSensor = (FakeBeltPositionSensor)sensor;
-				logger.info(" op{} 0-{} 1-{}", objectPosition, fSensor.getRange()[0], fSensor.getRange()[1]);
+				logger.debug(" op[{}] range[0]->{} - range[1]->{}", objectPosition, fSensor.getRange()[0], fSensor.getRange()[1]);
 				if(subscription == null && objectPosition >= fSensor.getRange()[0] && objectPosition <= fSensor.getRange()[1]){
 					subscription = observable.subscribe((FakeBeltPositionSensor)sensor);
 				}
@@ -80,16 +80,16 @@ public class FakeBelt extends Belt{
 	}
 	
 	@Override
-	public void doOnBeltStopOperating() {
+	protected void doOnBeltStopOperating() {
 		
 	}
 
 	@Override
 	public void addEmptyJar() {
 		logger.info("Adding empty jar");
-		if(isEmptyBelt()){
+		if(isEmpty()){
 			objectPosition = 0.0;
-			emptyBelt = false;
+			empty = false;
 		}
 		
 	}
@@ -97,8 +97,8 @@ public class FakeBelt extends Belt{
 	@Override
 	public void removeFullJar() {
 		logger.info("Removing full jar");
-		if(!isEmptyBelt()){
-			emptyBelt = true;
+		if(!isEmpty()){
+			empty = true;
 		}
 	}
 

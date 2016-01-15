@@ -24,6 +24,13 @@
 					scada.stopOperating();
 				});
 				
+				$("#setJarsInDeposit").on('click', function(e){
+					if($("#setJarsInDepositInput").val()>0){
+						scada.setNumberOfJarsInDeposit($("#setJarsInDepositInput").val());
+					}
+					$("#setJarsInDepositInput").val(0);
+				});
+				
 				/*console.log("add")
 				scada.addJar();
 				console.log("post")
@@ -56,6 +63,9 @@
 			<input id="stop" type="button" value="Stop"/>
 			<input id="startOperating" type="button" value="Start Operating"/>
 			<input id="stopOperating" type="button" value="Stop Operating"/>
+		</div>
+		<div>
+			<input id="setJarsInDepositInput" type="number"/> <input id="setJarsInDeposit" type="button" value="set number of jars in deposit"/>
 		</div>
 	</body>
 </html>

@@ -48,22 +48,22 @@ public class FakeJamMachine extends JamMachine{
 	}
 	
 	@Override
-	public void doOnStart() {
+	protected void doOnStart() {
 		observable.connect();
 	}
 	
 	@Override
-	public void doOnStop() {
+	protected void doOnStop() {
 		super.doOnStop();
 	}
 	
 	@Override
-	public void doOnStartOperating() {
+	protected void doOnStartOperating() {
 		filling = true;
 	}
 	
 	@Override
-	public void doOnStopOperating() {
+	protected void doOnStopOperating() {
 		super.doOnStopOperating();
 	}
 	

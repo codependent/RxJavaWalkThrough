@@ -14,19 +14,19 @@ public abstract class JamMachine extends Machine{
 	}
 	
 	@Override
-	public void doOnStart() {
+	protected void doOnStart() {
 	}
 
 	@Override
-	public void doOnStop() {
+	protected void doOnStop() {
 	}
 	
 	@Override
-	public void doOnStartOperating() {
+	protected void doOnStartOperating() {
 	}
 	
 	@Override
-	public void doOnStopOperating() {
+	protected void doOnStopOperating() {
 	}
 	
 	public ConnectableObservable<Signal> getObservable() {

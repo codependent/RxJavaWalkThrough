@@ -1,6 +1,7 @@
 function Scada(scadaCanvas){
 	
 	var conveyor = new Conveyor();
+	var jarDeposit = new JarDeposit(5);
     var jamMachine = new JamMachine();
     var jar1;
     
@@ -22,6 +23,7 @@ function Scada(scadaCanvas){
 		canvasContext.fillStyle = "#eee";
 		canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);*/
 		conveyor.draw(canvasContext);
+		jarDeposit.draw(canvasContext);
 		jamMachine.draw(canvasContext);
 		canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 		if(jar1!=null){
@@ -49,18 +51,33 @@ function Scada(scadaCanvas){
 		    		self.setJarState(true);
 		    	}else if(msg.type == "JAR_IN_BELT_END"){
 		    		self.removeJarFromBelt();
+		    	}else if(msg.type == "JARDEPOSIT_EMPTY"){
+		    		self.setNumberOfJarsInDeposit(0);
+		    	}else if(msg.type == "JARDEPOSIT_DROPPED_JAR"){
+		    		
 		    	}
 		    });
 		});
 	}
 	
+	this.start = function(){
+		stompClient.send("/app/start", {}, null);
+	}
+	
+	this.stop = function(){
+		stompClient.send("/app/stop", {}, null);
+	}
+	
+	this.startOperating = function(){
+		stompClient.send("/app/startOperating", {}, null);
+	}
+	
+	this.stopOperating = function(){
+		stompClient.send("/app/stopOperating", {}, null);
+	}
+	
 	this.refreshDrawing = function(){
-		conveyor.draw(canvasContext);
-		jamMachine.draw(canvasContext);
-		canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-		if(jar1!=null){
-			jar1.draw(canvasContext);
-		}
+		initializeDrawing();
 	}
 	
 	this.addJar = function(positionX){
@@ -83,20 +100,10 @@ function Scada(scadaCanvas){
 		jar1 = undefined;
 	}
 	
-	this.start = function(){
-		stompClient.send("/app/start", {}, null);
-	}
-	
-	this.stop = function(){
-		stompClient.send("/app/stop", {}, null);
-	}
-	
-	this.startOperating = function(){
-		stompClient.send("/app/startOperating", {}, null);
-	}
-	
-	this.stopOperating = function(){
-		stompClient.send("/app/stopOperating", {}, null);
+	this.setNumberOfJarsInDeposit = function(capacity){
+		jarDeposit.setCapacity(capacity);
+		stompClient.send("/app/jarDeposit/jars", {}, '{"number":'+capacity+'}');
+		
 	}
 	
 }
@@ -109,6 +116,28 @@ function Conveyor(){
 		conveyor1.onload = function() {
 			canvasContext.drawImage(conveyor1, 100, 200, 600, 80);
 		};
+	}
+	
+}
+
+function JarDeposit(capacity){
+	
+	var capacity = capacity; 
+	
+	this.draw = function(canvasContext){
+		var conveyor1 = new Image(); 
+		if(capacity > 0){
+			conveyor1.src = "/img/depositoBotes.jpg";
+		}else{
+			conveyor1.src = "/img/depositoBotesVacio.jpg";
+		}
+		conveyor1.onload = function() {
+			canvasContext.drawImage(conveyor1, 80, 120, 100, 60);
+		};
+	}
+	
+	this.setCapacity = function(cap){
+		capacity = cap;
 	}
 	
 }

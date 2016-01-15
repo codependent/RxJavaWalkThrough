@@ -79,12 +79,12 @@ public abstract class Machine{
 		return lifecycleObservable;
 	}
 	
-	public abstract void doOnStart();
+	protected abstract void doOnStart();
 	
-	public abstract void doOnStop();
+	protected abstract void doOnStop();
 	
-	public abstract void doOnStartOperating();
+	protected abstract void doOnStartOperating();
 	
-	public abstract void doOnStopOperating();
+	protected abstract void doOnStopOperating();
 	
 }

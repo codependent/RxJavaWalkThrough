@@ -10,6 +10,9 @@ spring:
 server:
   port: 10000
   
+scada:
+  refresh: 50
+  
 logging:
 #   file: /var/memento/security.log
   level:

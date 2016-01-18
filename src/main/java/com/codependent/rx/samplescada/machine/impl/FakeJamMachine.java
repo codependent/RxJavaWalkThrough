@@ -19,7 +19,7 @@ public class FakeJamMachine extends JamMachine{
 		Observable<Signal> obs = Observable.<Signal>create( (s) -> {
 			while(state != State.STOPPED){
 				try {
-					Thread.sleep(100);
+					Thread.sleep(16);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

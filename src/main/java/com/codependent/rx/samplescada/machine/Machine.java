@@ -29,7 +29,7 @@ public abstract class Machine{
 		lifecycleObservable = Observable.<Signal>create( (s) -> {
 			while(true){
 				try {
-					Thread.sleep(100);
+					Thread.sleep(16);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

@@ -45,7 +45,7 @@ public class FakeBelt extends Belt{
 			while(!completed){
 				Instant instant = clock.instant();
 				try {
-					Thread.sleep(100);
+					Thread.sleep(16);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

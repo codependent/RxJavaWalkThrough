@@ -20,7 +20,7 @@ public abstract class JarDeposit extends Machine{
 		observable = Observable.<Signal>create( (s) -> {
 			while(state != Machine.State.STOPPED){
 				try {
-					Thread.sleep(100);
+					Thread.sleep(16);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}

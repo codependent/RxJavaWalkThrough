@@ -6,7 +6,11 @@ import java.util.concurrent.CountDownLatch;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import com.codependent.rx.samplescada.machine.Signal;
+import com.codependent.rx.samplescada.machine.Machine.State;
+
 import rx.Observable;
+import rx.Observer;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 
@@ -79,30 +83,47 @@ public class HotColdObservableTest {
 		
 	}
 	
-	public void testHotObservable3() throws InterruptedException{
+	public void testHotObservable23() throws InterruptedException{
 		
 		CountDownLatch latch = new CountDownLatch(1);
 		
-		ConnectableObservable<Integer> observable = Observable.range(1, 1000)
-				.doOnCompleted(() -> {
-					latch.countDown();
-				})
-				.subscribeOn(Schedulers.io())
-				.publish();
+		ConnectableObservable<Integer> observable = Observable.<Integer>create( (s) -> {
+			while(true){
+				try {
+					Thread.sleep(500);
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				System.out.println("["+Thread.currentThread().getName()+ "] observable");
+				s.onNext(1);
+			}
+		})
 		
-		SensorReaderObserver sensor1 = new SensorReaderObserver();
-		SensorReaderObserver sensor2 = new SensorReaderObserver();
+		.subscribeOn(Schedulers.io())
+		.observeOn(Schedulers.io())
+		.publish();
 		
-		observable.subscribe(sensor1);
-		observable.subscribe(sensor2);
+		Observer<Integer> observer = new Observer<Integer>() {
+			@Override
+			public void onNext(Integer i) {
+				System.out.println("["+Thread.currentThread().getName()+ "] got "+i);
+			}
+			@Override
+			public void onCompleted() {
+				System.out.println("completed");
+			}
+
+			@Override
+			public void onError(Throwable e) {
+				e.printStackTrace();
+			}
+		};
 		
+		observable.subscribe(observer);
+		System.out.println("["+Thread.currentThread().getName()+ "]");
 		observable.connect();
 		
 		latch.await();
-		
-		Assert.assertEquals(sensor1.getValues().size(), 1000);
-		Assert.assertEquals(sensor2.getValues().size(), 1000);
-		
 	}
 	
 }

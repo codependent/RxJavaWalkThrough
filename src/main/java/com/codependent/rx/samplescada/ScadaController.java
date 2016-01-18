@@ -21,8 +21,7 @@ public class ScadaController {
 	private Scada scada;
 	
 	@RequestMapping
-	public void scada(){
-	}
+	public void scada(){}
 	
 	@MessageMapping("/start")
 	public void start() {

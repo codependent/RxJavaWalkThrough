@@ -26,7 +26,7 @@ public class FakeBeltPositionSensor extends PositionSensor implements Observer<S
 		observable = Observable.<Signal>create( (s) -> {
 			while(state==State.STARTED){
 				try {
-					Thread.sleep(100);
+					Thread.sleep(16);
 				} catch (Exception e) {
 					e.printStackTrace();
 				}

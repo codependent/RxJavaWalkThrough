@@ -4,6 +4,7 @@ function Scada(scadaCanvas){
 	var canvasContext = canvas.getContext("2d");
 	var canvasWidth = canvas.width;
 	var canvasHeight = canvas.height;
+	var fps = 60;
 	
 	var conveyor = new Conveyor(canvasContext);
 	var jarDeposit = new JarDeposit(canvasContext, 5);
@@ -14,7 +15,10 @@ function Scada(scadaCanvas){
 	var stompClient = Stomp.over(socket);
 	var self = this;
 	
-	draw();
+	setInterval(function(){
+		draw();
+	}, 1000/fps);
+	
 	startWebSocket();
 	
 	function draw(){
@@ -38,7 +42,7 @@ function Scada(scadaCanvas){
 		    	console.log("----- WS MESSAGE -----");
 		    	console.log(message);
 		    	console.log("----------------------");
-		    	self.refreshDrawing();
+		    	//self.refreshDrawing();
 		    	var msg = JSON.parse(message.body);
 		    	$("#message").text(msg.type + "-" + msg.info);
 		    	if(msg.type == "JAR_IN_BELT_POSITION"){
@@ -75,10 +79,10 @@ function Scada(scadaCanvas){
 	this.stopOperating = function(){
 		stompClient.send("/app/stopOperating", {}, null);
 	}
-	
+	/*
 	this.refreshDrawing = function(){
 		draw();
-	}
+	}*/
 	
 	this.addJar = function(positionX){
 		jar1 = new Jar(positionX, false);

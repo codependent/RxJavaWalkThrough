@@ -50,8 +50,14 @@ public class ScadaController {
 	
 	@MessageMapping("/jarDeposit/jars")
 	public void setNumberOfJarsInDeposit(Map<String, Integer> message) {
-		logger.info("received setNumberOfJarsInDeposit start {}", message);
+		logger.info("received setNumberOfJarsInDeposit {}", message);
 		scada.setNumberOfJarsInDeposit(message.get("number"));
+	}	
+	
+	@MessageMapping("/conveyor/speed")
+	public void setConveyorSpeed(Map<String, Double> message) {
+		logger.info("received setConveyorSpeed {}", message);
+		scada.setBeltSpeed(message.get("speed"));
 	}	
 	
 }

@@ -31,6 +31,13 @@
 					$("#setJarsInDepositInput").val(0);
 				});
 				
+				$("#setConveyorSpeed").on('click', function(e){
+					if($("#setConveyorSpeedInput").val()>0){
+						scada.setConveyorSpeed($("#setConveyorSpeedInput").val());
+					}
+					$("#setConveyorSpeedInput").val(0);
+				});
+				
 				/*console.log("add")
 				scada.addJar();
 				console.log("post")
@@ -66,6 +73,9 @@
 		</div>
 		<div>
 			<input id="setJarsInDepositInput" type="number"/> <input id="setJarsInDeposit" type="button" value="set number of jars in deposit"/>
+		</div>
+		<div>
+			<input id="setConveyorSpeedInput" type="number" step="0.01"/> <input id="setConveyorSpeed" type="button" value="set conveyor speed"/>
 		</div>
 	</body>
 </html>

@@ -37,6 +37,10 @@ public abstract class Belt extends Machine implements Observer<Signal>{
 		return speed;
 	}
 	
+	public void setSpeed(double speed) {
+		this.speed = speed;
+	}
+	
 	@Override
 	protected void doOnStart(){
 		doOnBeltStart();

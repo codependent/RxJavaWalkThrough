@@ -103,9 +103,11 @@ function Scada(scadaCanvas){
 	this.setNumberOfJarsInDeposit = function(capacity){
 		jarDeposit.setCapacity(capacity);
 		stompClient.send("/app/jarDeposit/jars", {}, '{"number":'+capacity+'}');
-		
 	}
 	
+	this.setConveyorSpeed = function(speed){
+		stompClient.send("/app/conveyor/speed", {}, '{"speed":'+parseFloat(speed).toFixed(2)+'}');
+	}
 }
 
 function Conveyor(canvasContext){

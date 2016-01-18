@@ -1,15 +1,15 @@
 function Scada(scadaCanvas){
 	
-	var conveyor = new Conveyor();
-	var jarDeposit = new JarDeposit(5);
-    var jamMachine = new JamMachine();
-    var jar1;
-    
 	var canvas = scadaCanvas;
 	var canvasContext = canvas.getContext("2d");
 	var canvasWidth = canvas.width;
 	var canvasHeight = canvas.height;
 	
+	var conveyor = new Conveyor(canvasContext);
+	var jarDeposit = new JarDeposit(canvasContext, 5);
+    var jamMachine = new JamMachine(canvasContext);
+    var jar1;
+    
 	var socket = new SockJS("/scada/ws");
 	var stompClient = Stomp.over(socket);
 	var self = this;
@@ -23,7 +23,7 @@ function Scada(scadaCanvas){
 		canvasContext.fillStyle = "#eee";
 		canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);*/
 		canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
-		conveyor.draw(canvasContext);
+		conveyor.draw();
 		jarDeposit.draw(canvasContext);
 		jamMachine.draw(canvasContext);
 		if(jar1!=null){
@@ -108,22 +108,30 @@ function Scada(scadaCanvas){
 	
 }
 
-function Conveyor(){
+function Conveyor(canvasContext){
+	var canvasContext = canvasContext;
 	var conveyor1 = new Image(); 
 	conveyor1.src = "/img/cinta.jpg";
-	this.draw = function(canvasContext){
+	conveyor1.onload = function(){
+		canvasContext.drawImage(conveyor1, 100, 200, 600, 80);
+	}
+	this.draw = function(){
 		canvasContext.drawImage(conveyor1, 100, 200, 600, 80);
 	}
 }
 
-function JarDeposit(capacity){
+function JarDeposit(canvasContext, capacity){
+	var canvasContext = canvasContext;
+	var capacity = capacity; 
 	var fullJarDeposit = new Image();
 	fullJarDeposit.src = "/img/depositoBotes.jpg";
+	fullJarDeposit.onload = function(){
+		canvasContext.drawImage(fullJarDeposit, 80, 120, 100, 60);
+	}
 	var emptyJarDeposit = new Image();
 	emptyJarDeposit.src = "/img/depositoBotesVacio.jpg";
-	var capacity = capacity; 
 	
-	this.draw = function(canvasContext){
+	this.draw = function(){
 		if(capacity>0){
 			canvasContext.drawImage(fullJarDeposit, 80, 120, 100, 60);
 		}else{
@@ -136,9 +144,13 @@ function JarDeposit(capacity){
 	}
 }
 
-function JamMachine(){
+function JamMachine(canvasContext){
+	var canvasContext = canvasContext;
 	var jamMachine = new Image() 
 	jamMachine.src = "/img/depositoMermelada.jpg" 
+	jamMachine.onload = function(){
+		canvasContext.drawImage(jamMachine, 350, 60, 80, 100);
+	}
 		
 	this.draw = function(canvasContext){
 		canvasContext.drawImage(jamMachine, 350, 60, 80, 100);

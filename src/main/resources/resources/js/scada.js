@@ -14,18 +14,18 @@ function Scada(scadaCanvas){
 	var stompClient = Stomp.over(socket);
 	var self = this;
 	
-	initializeDrawing();
+	draw();
 	startWebSocket();
 	
-	function initializeDrawing(){
+	function draw(){
 		/*canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 	    //color in the background
 		canvasContext.fillStyle = "#eee";
 		canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);*/
+		canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 		conveyor.draw(canvasContext);
 		jarDeposit.draw(canvasContext);
 		jamMachine.draw(canvasContext);
-		canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 		if(jar1!=null){
 			jar1.draw(canvasContext);
 		}
@@ -77,7 +77,7 @@ function Scada(scadaCanvas){
 	}
 	
 	this.refreshDrawing = function(){
-		initializeDrawing();
+		draw();
 	}
 	
 	this.addJar = function(positionX){
@@ -109,67 +109,59 @@ function Scada(scadaCanvas){
 }
 
 function Conveyor(){
-	
+	var conveyor1 = new Image(); 
+	conveyor1.src = "/img/cinta.jpg";
 	this.draw = function(canvasContext){
-		var conveyor1 = new Image(); 
-    	conveyor1.src = "/img/cinta.jpg";
-		conveyor1.onload = function() {
-			canvasContext.drawImage(conveyor1, 100, 200, 600, 80);
-		};
+		canvasContext.drawImage(conveyor1, 100, 200, 600, 80);
 	}
-	
 }
 
 function JarDeposit(capacity){
-	
+	var fullJarDeposit = new Image();
+	fullJarDeposit.src = "/img/depositoBotes.jpg";
+	var emptyJarDeposit = new Image();
+	emptyJarDeposit.src = "/img/depositoBotesVacio.jpg";
 	var capacity = capacity; 
 	
 	this.draw = function(canvasContext){
-		var conveyor1 = new Image(); 
-		if(capacity > 0){
-			conveyor1.src = "/img/depositoBotes.jpg";
+		if(capacity>0){
+			canvasContext.drawImage(fullJarDeposit, 80, 120, 100, 60);
 		}else{
-			conveyor1.src = "/img/depositoBotesVacio.jpg";
+			canvasContext.drawImage(emptyJarDeposit, 80, 120, 100, 60);
 		}
-		conveyor1.onload = function() {
-			canvasContext.drawImage(conveyor1, 80, 120, 100, 60);
-		};
 	}
 	
 	this.setCapacity = function(cap){
 		capacity = cap;
 	}
-	
 }
 
 function JamMachine(){
-	
+	var jamMachine = new Image() 
+	jamMachine.src = "/img/depositoMermelada.jpg" 
+		
 	this.draw = function(canvasContext){
-		var jamMachine = new Image() 
-    	jamMachine.src = "/img/depositoMermelada.jpg" 
-    		jamMachine.onload = function() {
-			canvasContext.drawImage(jamMachine, 350, 60, 80, 100);
-    	};
+		canvasContext.drawImage(jamMachine, 350, 60, 80, 100);
 	}
 	
 }
 
 function Jar(posX, filled){
 	
+	var emptyMarmaladeJar = new Image();
+	emptyMarmaladeJar.src = "/img/mermeladaVacio.gif" 
+	var fullMarmaladeJar = new Image();
+	fullMarmaladeJar.src = "/img/mermeladaSinTapa.gif" 
 	this.state = !filled ? "empty" : "filled";
 	this.positionX = (posX * 600/10) + 100;
 	var self = this;
 	
 	this.draw = function(canvasContext){
-		var marmaladeJar = new Image() 
 		if(this.state == "empty"){
-			 marmaladeJar.src = "/img/mermeladaVacio.gif" 
+			canvasContext.drawImage(emptyMarmaladeJar, self.positionX, 170, 25, 30);
 		}else{
-			 marmaladeJar.src = "/img/mermeladaSinTapa.gif" 
+			canvasContext.drawImage(fullMarmaladeJar, self.positionX, 170, 25, 30);
 		}
-    	marmaladeJar.onload = function() {
-			canvasContext.drawImage(marmaladeJar, self.positionX, 170, 25, 30);
-    	};
 	}
 	
 	this.setPositionX = function(posX){

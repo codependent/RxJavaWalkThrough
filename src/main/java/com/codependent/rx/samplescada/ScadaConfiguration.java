@@ -16,6 +16,7 @@ import com.codependent.rx.samplescada.machine.Signal;
 import com.codependent.rx.samplescada.machine.Signal.Type;
 import com.codependent.rx.samplescada.machine.impl.FakeBelt;
 import com.codependent.rx.samplescada.machine.impl.FakeJarDeposit;
+import com.codependent.rx.samplescada.machine.robot.impl.FakeTranslatorRobot;
 import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
 import com.codependent.rx.samplescada.machine.sensor.impl.FakeBeltPositionSensor;
 
@@ -44,6 +45,11 @@ public class ScadaConfiguration extends AbstractWebSocketMessageBrokerConfigurer
 	@Bean
 	public JarDeposit jarDeposit(){
 		return new FakeJarDeposit("jarDeposit", 1);
+	}
+	
+	@Bean
+	public FakeTranslatorRobot translatingRobot(){
+		return new FakeTranslatorRobot("translatingRobot", 1.0);
 	}
 
 	@Override

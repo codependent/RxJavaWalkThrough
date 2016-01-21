@@ -6,9 +6,11 @@ function Scada(scadaCanvas){
 	var canvasHeight = canvas.height;
 	var fps = 60;
 	
-	var conveyor = new Conveyor(canvasContext);
+	var conveyor = new Conveyor(canvasContext, 200);
+	var conveyor2 = new Conveyor(canvasContext, 450);
 	var jarDeposit = new JarDeposit(canvasContext, 5);
     var jamMachine = new JamMachine(canvasContext);
+    var translatingRobot = new TranslatingRobot(canvasContext);
     var jar1;
     
 	var socket = new SockJS("/scada/ws");
@@ -28,8 +30,10 @@ function Scada(scadaCanvas){
 		canvasContext.fillRect(0, 0, canvasWidth, canvasHeight);*/
 		canvasContext.clearRect(0, 0, canvasWidth, canvasHeight);
 		conveyor.draw();
+		conveyor2.draw();
 		jarDeposit.draw(canvasContext);
 		jamMachine.draw(canvasContext);
+		translatingRobot.draw(canvasContext);
 		if(jar1!=null){
 			jar1.draw(canvasContext);
 		}
@@ -59,6 +63,17 @@ function Scada(scadaCanvas){
 		    		self.setNumberOfJarsInDeposit(0);
 		    	}else if(msg.type == "JARDEPOSIT_DROPPED_JAR"){
 		    		
+		    	}else if(msg.type == "TRANSLATIONROBOT_TRANSLATING"){
+		    		if(!self.isRobotTranslatingJar()){
+		    			self.translatingRobotPickUpJar();
+		    		}
+		    		self.translatingRobotMove(parseFloat(msg.info));
+		    	}else if(msg.type == "TRANSLATIONROBOT_TRANSLATED"){
+		    		self.translatingRobotDropJar();
+		    	}else if(msg.type == "TRANSLATIONROBOT_RETURNING"){
+		    		self.translatingRobotMove(-1.0*parseFloat(msg.info));
+		    	}else if(msg.type == "TRANSLATIONROBOT_RETURNED"){
+
 		    	}
 		    });
 		});
@@ -112,17 +127,34 @@ function Scada(scadaCanvas){
 	this.setConveyorSpeed = function(speed){
 		stompClient.send("/app/conveyor/speed", {}, '{"speed":'+parseFloat(speed).toFixed(2)+'}');
 	}
+	
+	this.isRobotTranslatingJar = function(){
+		return translatingRobot.isTranslating();
+	}
+	
+	this.translatingRobotPickUpJar = function(){
+		return translatingRobot.pickJar();
+	}
+	
+	this.translatingRobotDropJar = function(){
+		return translatingRobot.dropJar();
+	}
+	
+	this.translatingRobotMove = function(posY){
+		return translatingRobot.moveRobot(posY);
+	}
 }
 
-function Conveyor(canvasContext){
+function Conveyor(canvasContext, posY){
 	var canvasContext = canvasContext;
+	var positionY = posY;
 	var conveyor1 = new Image(); 
 	conveyor1.src = "/img/cinta.jpg";
 	conveyor1.onload = function(){
-		canvasContext.drawImage(conveyor1, 100, 200, 600, 80);
+		canvasContext.drawImage(conveyor1, 100, positionY, 600, 80);
 	}
 	this.draw = function(){
-		canvasContext.drawImage(conveyor1, 100, 200, 600, 80);
+		canvasContext.drawImage(conveyor1, 100, positionY, 600, 80);
 	}
 }
 
@@ -161,7 +193,47 @@ function JamMachine(canvasContext){
 	this.draw = function(canvasContext){
 		canvasContext.drawImage(jamMachine, 350, 60, 80, 100);
 	}
+}
+
+function TranslatingRobot(canvasContext){
+	var empty = false;
+	var positionY = 170.0;
+	var canvasContext = canvasContext;
+	var translatingRobotEmpty = new Image() ;
+	translatingRobotEmpty.src = "/img/robot.jpg" 
+		translatingRobotEmpty.onload = function(){
+		canvasContext.drawImage(translatingRobotEmpty, 350, 60, 80, 100);
+	}
+	var translatingRobotWithJar = new Image() 
+	translatingRobotWithJar.src = "/img/robotConBote.jpg" 
+		
+	this.draw = function(canvasContext){
+		if(empty){
+			canvasContext.drawImage(translatingRobotEmpty, 700, positionY, 100, 120);
+		}else{
+			canvasContext.drawImage(translatingRobotWithJar, 700, positionY, 100, 120);
+		}
+	}
 	
+	this.pickJar = function(){
+		empty = false;
+	}
+	
+	this.dropJar = function(){
+		empty = true;
+	}
+	
+	this.moveRobot = function(posY){
+		if(posY >= 0){
+			positionY = parseInt(posY * 250.0) + 170;
+		}else{
+			positionY = parseInt(posY * 250.0) + 170+250;
+		}
+	}
+	
+	this.isTranslating = function(){
+		return empty == false;
+	}
 }
 
 function Jar(posX, filled){

@@ -14,6 +14,8 @@ import com.codependent.rx.samplescada.machine.Signal.Type;
 import com.codependent.rx.samplescada.machine.impl.FakeBelt;
 import com.codependent.rx.samplescada.machine.impl.FakeJamMachine;
 import com.codependent.rx.samplescada.machine.impl.FakeJarDeposit;
+import com.codependent.rx.samplescada.machine.robot.Robot;
+import com.codependent.rx.samplescada.machine.robot.impl.FakeTranslatorRobot;
 import com.codependent.rx.samplescada.machine.sensor.PositionSensor;
 import com.codependent.rx.samplescada.machine.sensor.impl.FakeBeltPositionSensor;
 
@@ -30,19 +32,25 @@ public class Scada extends Machine implements Observer<Signal>{
 	
 	private PositionSensor beltEndSensor;
 	
+	private Robot translatingRobot;
+	
 	@Autowired(required=false)
 	private SimpMessagingTemplate messagingTemplate;
 	
 	private CountDownLatch latch = new CountDownLatch(1);
 
 	@Autowired
-	public Scada(Belt belt, JarDeposit jarDeposit, JamMachine jamMachine, @Qualifier("jamMachineBeltSensor") PositionSensor jamMachineBeltSensor, @Qualifier("beltEndSensor") PositionSensor beltEndSensor){
+	public Scada(Belt belt, JarDeposit jarDeposit, JamMachine jamMachine, 
+			@Qualifier("jamMachineBeltSensor") PositionSensor jamMachineBeltSensor, 
+			@Qualifier("beltEndSensor") PositionSensor beltEndSensor,
+			@Qualifier("translatingRobot") Robot translatingRobot){
 		super("scada");
 		this.belt = belt;
 		this.jarDeposit = jarDeposit;
 		this.jamMachine = jamMachine;
 		this.jamMachineBeltSensor = jamMachineBeltSensor;
 		this.beltEndSensor = beltEndSensor;
+		this.translatingRobot = translatingRobot;
 	}
 	
 	@Override
@@ -65,6 +73,10 @@ public class Scada extends Machine implements Observer<Signal>{
 		
 		belt.start();
 		belt.getLifecycleObservable().subscribe(this);
+		
+		translatingRobot.start();
+		translatingRobot.getObservable().subscribe(this);
+		translatingRobot.getLifecycleObservable().subscribe(this);
 	}
 
 	@Override
@@ -100,11 +112,12 @@ public class Scada extends Machine implements Observer<Signal>{
 	public static void main(String[] args) throws InterruptedException {
 		PositionSensor jamMachineBeltSensor = new FakeBeltPositionSensor("jamMachineBeltSensor", new Double[]{0.0, 4.9}, 0.0, 1.0, new Signal(Type.JAR_IN_JARMACHINE));
 		PositionSensor beltEndSensor = new FakeBeltPositionSensor("beltEndSensor", new Double[]{4.9, 10.0}, 5.0, 1.0, new Signal(Type.JAR_IN_BELT_END));
-		Belt belt = new FakeBelt("belt", 10.0, 0.10, Arrays.asList(new PositionSensor[]{jamMachineBeltSensor,beltEndSensor}));
+		Belt belt = new FakeBelt("belt", 10.0, 0.5, Arrays.asList(new PositionSensor[]{jamMachineBeltSensor,beltEndSensor}));
 		JarDeposit jarDeposit = new FakeJarDeposit("jarDeposit", 5);
 		JamMachine jamMachine = new FakeJamMachine();
+		Robot translatingRobot = new FakeTranslatorRobot("translatingRobot", 1.0);
 		
-		Scada scada = new Scada(belt, jarDeposit, jamMachine, jamMachineBeltSensor, beltEndSensor);
+		Scada scada = new Scada(belt, jarDeposit, jamMachine, jamMachineBeltSensor, beltEndSensor, translatingRobot);
 		scada.start();
 		
 		scada.startOperating();
@@ -123,35 +136,51 @@ public class Scada extends Machine implements Observer<Signal>{
 		scada.latch.await();
 	}
 
+	@SuppressWarnings("incomplete-switch")
 	@Override
 	public void onNext(Signal s) {
 		logger.info("{}",s);
 		if(messagingTemplate!=null){
 			messagingTemplate.convertAndSend("/topic/ui", s);
 		}
-		if(s.getType() == Type.JARDEPOSIT_DROPPED_JAR){
-			belt.addEmptyJar();
-			belt.startOperating();
-		}else if(s.getType() == Type.JARDEPOSIT_EMPTY){
-			
-		}else if(s.getType() == Type.JARDEPOSIT_DROPPED_JAR){
-			
-		}else if(s.getType() == Type.JAR_IN_JARMACHINE_FILLING_INFO){
-			
-		}else if(s.getType() == Type.JAR_IN_JARMACHINE){
-			belt.stopOperating();
-			jamMachine.startOperating();
-		}else if(s.getType() == Type.JARMACHINE_JAR_FILLED){
-			jamMachine.stopOperating();
-			belt.startOperating();
-		}else if(s.getType() == Type.JAR_IN_BELT_POSITION){
-			
-		}else if(s.getType() == Type.JAR_IN_BELT_END){
-			belt.stopOperating();
-			belt.removeFullJar();
-			jarDeposit.doDropJar();
-			jarDeposit.startOperating();
+		
+		switch(s.getType()){
+			case JARDEPOSIT_DROPPED_JAR:
+				belt.addEmptyJar();
+				belt.startOperating();
+				break;
+			case JARDEPOSIT_EMPTY:
+				break;
+			case JAR_IN_JARMACHINE_FILLING_INFO:
+				break;
+			case JAR_IN_JARMACHINE:
+				belt.stopOperating();
+				jamMachine.startOperating();
+				break;
+			case JARMACHINE_JAR_FILLED:
+				jamMachine.stopOperating();
+				belt.startOperating();
+				break;
+			case JAR_IN_BELT_POSITION:
+				break;
+			case JAR_IN_BELT_END:
+				belt.stopOperating();
+				belt.removeFullJar();
+				translatingRobot.startOperating();
+				break;
+			case TRANSLATIONROBOT_TRANSLATING:
+				if(belt.isEmpty()){
+					jarDeposit.startOperating();
+				}
+				break;
+			case TRANSLATIONROBOT_TRANSLATED:
+				break;
+			case TRANSLATIONROBOT_RETURNING:
+				break;
+			case TRANSLATIONROBOT_RETURNED:
+				break;
 		}
+		
 	}
 	
 	@Override

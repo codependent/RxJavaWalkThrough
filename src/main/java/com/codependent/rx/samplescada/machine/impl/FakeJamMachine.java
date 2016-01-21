@@ -54,7 +54,7 @@ public class FakeJamMachine extends JamMachine{
 	
 	@Override
 	protected void doOnStop() {
-		super.doOnStop();
+		
 	}
 	
 	@Override

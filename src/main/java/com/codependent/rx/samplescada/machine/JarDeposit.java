@@ -56,6 +56,7 @@ public abstract class JarDeposit extends Machine{
 	
 	@Override
 	protected void doOnStartOperating() {
+		doDropJar();
 		drop = true;
 	}
 	

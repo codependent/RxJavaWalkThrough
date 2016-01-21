@@ -58,15 +58,15 @@ function Scada(scadaCanvas){
 		    	}else if(msg.type == "JAR_IN_JARMACHINE_FILLING_INFO" && msg.info == 100){
 		    		self.setJarState(true);
 		    	}else if(msg.type == "JAR_IN_BELT_END"){
-		    		self.removeJarFromBelt();
+		    		
 		    	}else if(msg.type == "JARDEPOSIT_EMPTY"){
 		    		self.setNumberOfJarsInDeposit(0);
 		    	}else if(msg.type == "JARDEPOSIT_DROPPED_JAR"){
 		    		
+		    	}else if(msg.type == "TRANSLATIONROBOT_PICKINGUP_JAR"){
+		    		self.removeJarFromBelt();
+		    		self.translatingRobotPickUpJar();
 		    	}else if(msg.type == "TRANSLATIONROBOT_TRANSLATING"){
-		    		if(!self.isRobotTranslatingJar()){
-		    			self.translatingRobotPickUpJar();
-		    		}
 		    		self.translatingRobotMove(parseFloat(msg.info));
 		    	}else if(msg.type == "TRANSLATIONROBOT_TRANSLATED"){
 		    		self.translatingRobotDropJar();

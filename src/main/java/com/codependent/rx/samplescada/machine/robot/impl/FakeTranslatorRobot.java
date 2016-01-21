@@ -26,6 +26,7 @@ public class FakeTranslatorRobot extends TranslatorRobot{
 				}
 				if(gotTranslationOrder){
 					if(currentTime == 0.0 && !needsToGoBack){
+						s.onNext(new Signal(Signal.Type.TRANSLATIONROBOT_PICKINGUP_JAR));
 						translatingJar = true;
 						gotTranslationOrder = false;
 					}

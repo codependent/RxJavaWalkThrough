@@ -15,7 +15,6 @@ import com.codependent.rx.sample4.dto.VideoRating;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
-import com.netflix.hystrix.contrib.javanica.command.ObservableResult;
 
 @Service
 public class VideoClient {
@@ -31,42 +30,22 @@ public class VideoClient {
 	
 	@HystrixCommand
 	public Observable<VideoBasicInfo> addBasicInfo(VideoBasicInfo videoInfo){
-		return new ObservableResult<VideoBasicInfo>() {
-			@Override
-			public VideoBasicInfo invoke() {
-				return invokeAddBasicInfo(videoInfo);
-			}
-		};
+		return Observable.create( (s) -> {s.onNext(invokeAddBasicInfo(videoInfo));});
 	}
 	
 	@HystrixCommand
 	public Observable<VideoRating> addRating(VideoRating rating){
-		return new ObservableResult<VideoRating>() {
-			@Override
-			public VideoRating invoke() {
-				return invokeAddRatingSync(rating);
-			}
-		};
+		return Observable.create( (s) -> {s.onNext(invokeAddRatingSync(rating));});
 	}
 	
 	@HystrixCommand
 	public Observable<VideoBasicInfo> getVideoBasicInfo(Integer videoId){
-		return new ObservableResult<VideoBasicInfo>() {
-			@Override
-			public VideoBasicInfo invoke() {
-				return invokeGetVideoBasicInfoSync(videoId);
-			}
-		};
+		return Observable.create( (s) -> {s.onNext(invokeGetVideoBasicInfoSync(videoId));});
 	}
 	
 	@HystrixCommand
 	public Observable<VideoRating> getVideoRating(Integer videoId){
-		return new ObservableResult<VideoRating>() {
-			@Override
-			public VideoRating invoke() {
-				return invokeGetVideoRatingSync(videoId);
-			}
-		};
+		return Observable.create( (s) -> {s.onNext(invokeGetVideoRatingSync(videoId));});
 	}
 	
 	

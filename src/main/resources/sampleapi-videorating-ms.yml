@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: videorating-microservice
+  jpa:
+    hibernate:
+      ddl-auto: update
+    
+server:
+  port: 9998
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+    healthcheck:
+      enabled: true
+  
+videoService:
+  getVideoBasicInfo:
+    delay: 200
+  getVideoRating:
+    delay: 200
+  
+logging:
+#   file: /var/memento/security.log
+  level:
+    org.springframework.web: 'DEBUG'

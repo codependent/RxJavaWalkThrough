@@ -59,7 +59,7 @@ public class VideoApiApplication {
 
 		Observable.zip(videoBasicInfo, videoRating, (info, rating) -> {
 			return new VideoInfo(info, rating);
-		}).subscribe(dr::setResult, dr::setErrorResult);
+		}).subscribeOn(Schedulers.io()).subscribe(dr::setResult, dr::setErrorResult);
 		
 		return dr;
     }

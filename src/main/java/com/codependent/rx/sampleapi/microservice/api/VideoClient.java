@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import rx.Observable;
+import rx.schedulers.Schedulers;
 
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
 import com.codependent.rx.sample4.dto.VideoRating;
 import com.netflix.appinfo.InstanceInfo;
 import com.netflix.discovery.EurekaClient;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
+import com.netflix.hystrix.contrib.javanica.annotation.ObservableExecutionMode;
 
 @Service
 public class VideoClient {
@@ -30,22 +32,34 @@ public class VideoClient {
 	
 	@HystrixCommand
 	public Observable<VideoBasicInfo> addBasicInfo(VideoBasicInfo videoInfo){
-		return Observable.create( (s) -> {s.onNext(invokeAddBasicInfo(videoInfo));});
+		return Observable.<VideoBasicInfo>create( (s) -> {
+			s.onNext(invokeAddBasicInfo(videoInfo));
+			s.onCompleted();
+		}).subscribeOn(Schedulers.io());
 	}
 	
 	@HystrixCommand
 	public Observable<VideoRating> addRating(VideoRating rating){
-		return Observable.create( (s) -> {s.onNext(invokeAddRatingSync(rating));});
+		return Observable.<VideoRating>create( (s) -> {
+			s.onNext(invokeAddRatingSync(rating));
+			s.onCompleted();
+		}).subscribeOn(Schedulers.io());
 	}
 	
-	@HystrixCommand
+	@HystrixCommand(observableExecutionMode=ObservableExecutionMode.EAGER)
 	public Observable<VideoBasicInfo> getVideoBasicInfo(Integer videoId){
-		return Observable.create( (s) -> {s.onNext(invokeGetVideoBasicInfoSync(videoId));});
+		return Observable.<VideoBasicInfo>create( (s) -> {
+			s.onNext(invokeGetVideoBasicInfoSync(videoId));
+			s.onCompleted();
+		}).subscribeOn(Schedulers.io());
 	}
 	
-	@HystrixCommand
+	@HystrixCommand(observableExecutionMode=ObservableExecutionMode.EAGER)
 	public Observable<VideoRating> getVideoRating(Integer videoId){
-		return Observable.create( (s) -> {s.onNext(invokeGetVideoRatingSync(videoId));});
+		return Observable.<VideoRating>create( (s) -> {
+			s.onNext(invokeGetVideoRatingSync(videoId));
+			s.onCompleted();
+		}).subscribeOn(Schedulers.io());
 	}
 	
 	

@@ -52,16 +52,13 @@ public class VideoApiApplication {
 	private VideoClient videoClient;
 	
 	@RequestMapping(value="/videos/{videoId}", produces="application/json")
-    public DeferredResult<VideoInfo> getVideoInfo(@PathVariable Integer videoId) {
-		DeferredResult<VideoInfo> dr = new DeferredResult<VideoInfo>();
+    public Observable<VideoInfo> getVideoInfo(@PathVariable Integer videoId) {
 		Observable<VideoBasicInfo> videoBasicInfo = videoClient.getVideoBasicInfo(videoId);
 		Observable<VideoRating> videoRating = videoClient.getVideoRating(videoId);
 
-		Observable.zip(videoBasicInfo, videoRating, (info, rating) -> {
+		return Observable.zip(videoBasicInfo, videoRating, (info, rating) -> {
 			return new VideoInfo(info, rating);
-		}).subscribeOn(Schedulers.io()).subscribe(dr::setResult, dr::setErrorResult);
-		
-		return dr;
+		});
     }
 	
 	@RequestMapping(value="/videos", method=RequestMethod.POST , consumes="application/json", produces="application/json")

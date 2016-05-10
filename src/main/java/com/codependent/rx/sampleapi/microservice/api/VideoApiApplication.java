@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import rx.Observable;
+import rx.Single;
 import rx.schedulers.Schedulers;
 
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
@@ -52,13 +53,13 @@ public class VideoApiApplication {
 	private VideoClient videoClient;
 	
 	@RequestMapping(value="/videos/{videoId}", produces="application/json")
-    public Observable<VideoInfo> getVideoInfo(@PathVariable Integer videoId) {
+    public Single<VideoInfo> getVideoInfo(@PathVariable Integer videoId) {
 		Observable<VideoBasicInfo> videoBasicInfo = videoClient.getVideoBasicInfo(videoId);
 		Observable<VideoRating> videoRating = videoClient.getVideoRating(videoId);
 
 		return Observable.zip(videoBasicInfo, videoRating, (info, rating) -> {
 			return new VideoInfo(info, rating);
-		});
+		}).toSingle();
     }
 	
 	@RequestMapping(value="/videos", method=RequestMethod.POST , consumes="application/json", produces="application/json")

@@ -1,4 +1,4 @@
-# RxWalkThrough
+# RxJavaWalkThrough
 
 RxJava use examples:
 

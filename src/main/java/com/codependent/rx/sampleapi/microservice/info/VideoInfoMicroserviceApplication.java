@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import rx.Observable;
-
 import com.codependent.rx.sample4.dao.VideoBasicInfoRepository;
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
 import com.codependent.rx.sample4.rx.ObservableTxFactory;
+import com.codependent.rx.sample4.rx.SingleTxFactory;
 import com.codependent.rx.sample4.service.VideoService;
+
+import rx.Single;
 
 @RestController
 @EnableJpaRepositories(basePackageClasses=VideoBasicInfoRepository.class)
@@ -35,8 +36,8 @@ public class VideoInfoMicroserviceApplication {
 	private int maxPoolSize;
 	
 	@Bean
-	ObservableTxFactory observableTxFactory() {
-	    return new ObservableTxFactory();
+	SingleTxFactory singleTxFactory() {
+	    return new SingleTxFactory();
 	}
 	
 	@Bean
@@ -51,12 +52,12 @@ public class VideoInfoMicroserviceApplication {
 	private VideoService videoService;
 	
 	@RequestMapping(value="/videos/{videoId}", produces="application/json")
-    public Observable<VideoBasicInfo> getVideoInfo(@PathVariable Integer videoId) {
+    public Single<VideoBasicInfo> getVideoInfo(@PathVariable Integer videoId) {
 		return videoService.getVideoBasicInfo(videoId);
 	}
 	
 	@RequestMapping(value="/videos", method=RequestMethod.POST, consumes="application/json", produces="application/json")
-    public Observable<VideoBasicInfo> addVideoInfo(@RequestBody VideoBasicInfo videoInfo) {
+    public Single<VideoBasicInfo> addVideoInfo(@RequestBody VideoBasicInfo videoInfo) {
 		return videoService.addVideoBasicInfo(videoInfo);
 	}
 	

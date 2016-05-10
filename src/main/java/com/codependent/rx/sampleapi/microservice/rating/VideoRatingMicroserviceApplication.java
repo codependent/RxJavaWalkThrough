@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import rx.Observable;
+import rx.Single;
 
 import com.codependent.rx.sample4.dao.VideoBasicInfoRepository;
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
@@ -52,12 +52,12 @@ public class VideoRatingMicroserviceApplication {
 	private VideoService videoService;
 	
 	@RequestMapping(value="/videos/{videoId}", produces="application/json")
-    public Observable<VideoRating> getVideoRating(@PathVariable Integer videoId) {
+    public Single<VideoRating> getVideoRating(@PathVariable Integer videoId) {
 		return videoService.getVideoRating(videoId);
 	}
 	
 	@RequestMapping(value="/videos", method=RequestMethod.POST, consumes="application/json", produces="application/json")
-    public Observable<VideoRating> addVideoInfo(@RequestBody VideoRating rating) {
+    public Single<VideoRating> addVideoInfo(@RequestBody VideoRating rating) {
 		return videoService.addVideoRating(rating);
 	}
 	

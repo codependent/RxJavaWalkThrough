@@ -8,16 +8,16 @@ import org.springframework.core.task.TaskExecutor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.support.TransactionTemplate;
 
-import rx.Observable;
-import rx.Scheduler;
-import rx.schedulers.Schedulers;
-
 import com.codependent.rx.sample4.dao.VideoBasicInfoRepository;
 import com.codependent.rx.sample4.dao.VideoRatingRepository;
 import com.codependent.rx.sample4.dto.VideoBasicInfo;
 import com.codependent.rx.sample4.dto.VideoInfo;
 import com.codependent.rx.sample4.dto.VideoRating;
-import com.codependent.rx.sample4.rx.ObservableTxFactory;
+import com.codependent.rx.sample4.rx.SingleTxFactory;
+
+import rx.Scheduler;
+import rx.Single;
+import rx.schedulers.Schedulers;
 
 @Service
 public class VideoServiceImpl implements VideoService{
@@ -29,7 +29,7 @@ public class VideoServiceImpl implements VideoService{
 	private VideoRatingRepository ratingRepo;
 	
 	@Autowired
-	private ObservableTxFactory observableTxFactory;
+	private SingleTxFactory singleTxFactory;
 	
 	@Autowired
 	private TransactionTemplate  transactionTemplate;
@@ -51,47 +51,44 @@ public class VideoServiceImpl implements VideoService{
 	}
 
 	@Override
-	public Observable<VideoBasicInfo> addVideoBasicInfo(VideoBasicInfo videoBasicInfo) {
-		Observable<VideoBasicInfo> obs = Observable.create( s -> {
+	public Single<VideoBasicInfo> addVideoBasicInfo(VideoBasicInfo videoBasicInfo) {
+		Single<VideoBasicInfo> obs = Single.create( s -> {
 			VideoBasicInfo savedBasic = transactionTemplate.execute( status -> {
 				VideoBasicInfo basicInfo = basicInfoRepo.save(videoBasicInfo);
 				return basicInfo;
 			});
-			s.onNext(savedBasic);
-			s.onCompleted();
+			s.onSuccess(savedBasic);
 		});
 		return obs.subscribeOn(scheduler);
 	}
 	
 	@Override
-	public Observable<VideoRating> addVideoRating(VideoRating videoRating) {
-		Observable<VideoRating> obs =  Observable.create( s -> {
+	public Single<VideoRating> addVideoRating(VideoRating videoRating) {
+		Single<VideoRating> obs =  Single.create( s -> {
 			VideoRating savedRating = transactionTemplate.execute( status -> {
 				VideoRating rating = ratingRepo.save(videoRating);
 				return rating;
 			});
-			s.onNext(savedRating);
-			s.onCompleted();
+			s.onSuccess(savedRating);
 		});
 		return obs.subscribeOn(scheduler);
 	}
 	
-	public Observable<VideoBasicInfo> getVideoBasicInfo(Integer videoId){
-		Observable<VideoBasicInfo> obs = observableTxFactory.create( s -> {
+	public Single<VideoBasicInfo> getVideoBasicInfo(Integer videoId){
+		Single<VideoBasicInfo> obs = singleTxFactory.create( s -> {
 			if(basicInfoDelay!=null){
 				try {
 					Thread.sleep(basicInfoDelay);
 				} catch (Exception e) {}
 			}
 			VideoBasicInfo v = basicInfoRepo.findOne(videoId);
-			s.onNext(v);
-			s.onCompleted();
+			s.onSuccess(v);
 		});
 		return obs.subscribeOn(scheduler);
 	}
 	
-	public Observable<VideoRating> getVideoRating(Integer videoId){
-		Observable<VideoRating> obs =  Observable.create( s -> {
+	public Single<VideoRating> getVideoRating(Integer videoId){
+		Single<VideoRating> obs =  Single.create( s -> {
 			if(videoRatingDelay!=null){
 				try {
 					Thread.sleep(videoRatingDelay);
@@ -101,14 +98,13 @@ public class VideoServiceImpl implements VideoService{
 				VideoRating v = ratingRepo.findOne(videoId);
 				return v;
 			});
-			s.onNext(videoRating);
-			s.onCompleted();
+			s.onSuccess(videoRating);
 		});
 		return obs.subscribeOn(scheduler);
 	}
 	
-	public Observable<VideoInfo> getVideoFullInfo(Integer videoId){
-		return Observable.zip(getVideoBasicInfo(videoId), getVideoRating(videoId), (VideoBasicInfo basicInfo, VideoRating rating) -> {
+	public Single<VideoInfo> getVideoFullInfo(Integer videoId){
+		return Single.zip(getVideoBasicInfo(videoId), getVideoRating(videoId), (VideoBasicInfo basicInfo, VideoRating rating) -> {
 			return new VideoInfo(basicInfo, rating);
 		});
 	}

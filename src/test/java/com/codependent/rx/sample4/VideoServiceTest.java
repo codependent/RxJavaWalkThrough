@@ -8,7 +8,7 @@ import org.springframework.test.context.testng.AbstractTransactionalTestNGSpring
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import rx.Observable;
+import rx.Single;
 import rx.schedulers.Schedulers;
 
 import com.codependent.rx.sample4.cfg.TestConfiguration;
@@ -32,9 +32,9 @@ public class VideoServiceTest extends AbstractTransactionalTestNGSpringContextTe
 		
 		CountDownLatch latch = new CountDownLatch(3);
 		
-		Observable<VideoBasicInfo> videoBasicInfo = videoService.getVideoBasicInfo(2);
-		Observable<VideoRating> videoRating = videoService.getVideoRating(2);
-		Observable<VideoInfo> videoFullInfo = videoService.getVideoFullInfo(2);
+		Single<VideoBasicInfo> videoBasicInfo = videoService.getVideoBasicInfo(2);
+		Single<VideoRating> videoRating = videoService.getVideoRating(2);
+		Single<VideoInfo> videoFullInfo = videoService.getVideoFullInfo(2);
 		
 		videoBasicInfo.subscribe( s -> {
 			System.out.printf("Loaded video basic info: %s\n", s);
@@ -62,9 +62,9 @@ public class VideoServiceTest extends AbstractTransactionalTestNGSpringContextTe
 		
 		CountDownLatch latch = new CountDownLatch(3);
 		
-		Observable<VideoBasicInfo> videoBasicInfo = videoService.getVideoBasicInfo(2).subscribeOn(Schedulers.io());
-		Observable<VideoRating> videoRating = videoService.getVideoRating(2).subscribeOn(Schedulers.io());
-		Observable<VideoInfo> videoFullInfo = videoService.getVideoFullInfo(2).subscribeOn(Schedulers.io());
+		Single<VideoBasicInfo> videoBasicInfo = videoService.getVideoBasicInfo(2).subscribeOn(Schedulers.io());
+		Single<VideoRating> videoRating = videoService.getVideoRating(2).subscribeOn(Schedulers.io());
+		Single<VideoInfo> videoFullInfo = videoService.getVideoFullInfo(2).subscribeOn(Schedulers.io());
 		
 		videoBasicInfo.subscribe( s -> {
 			System.out.printf("Loaded video basic info: %s\n", s);

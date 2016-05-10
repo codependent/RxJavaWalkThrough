@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import com.codependent.rx.sample4.dao.VideoBasicInfoRepository;
-import com.codependent.rx.sample4.rx.ObservableTxFactory;
+import com.codependent.rx.sample4.rx.SingleTxFactory;
 import com.codependent.rx.sample4.service.VideoService;
 
 @EnableTransactionManagement
@@ -95,8 +95,8 @@ public class TestConfiguration {
 	}
 	
 	@Bean
-	ObservableTxFactory observableTxFactory() {
-	    return new ObservableTxFactory();
+	SingleTxFactory singleTxFactory() {
+	    return new SingleTxFactory();
 	}
 	
 	@Bean

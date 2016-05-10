@@ -9,22 +9,21 @@ import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import rx.Observable;
-import rx.Subscriber;
 import rx.schedulers.Schedulers;
 
 @Test
 public class StopWatchTest {
 
-	public void testStopWatch() throws InterruptedException{
+	public void testStopWatchThread() throws InterruptedException{
 		
 		CountDownLatch latch = new CountDownLatch(2);
 		
-		Observable<Duration> stopWatch = Observable.create(
-			(Subscriber<? super Duration> s) -> {
+		Observable<Duration> stopWatch = Observable.<Duration>create(
+			s -> {
 				Thread t = new Thread( () -> {
 					Clock clock = Clock.systemDefaultZone();
 					Instant instant = clock.instant();
-					while(!s.isUnsubscribed() && true){
+					while(!s.isUnsubscribed()){
 						Duration duration = Duration.between(instant, clock.instant());
 						s.onNext( duration );
 					}
@@ -54,15 +53,15 @@ public class StopWatchTest {
 		Assert.assertTrue(observer.getFinishTime().isAfter(observer2.getFinishTime()));
 	}
 	
-	public void testStopWatch2() throws InterruptedException{
+	public void testStopWatchSubscribeOn() throws InterruptedException{
 		
 		CountDownLatch latch = new CountDownLatch(2);
 		
-		Observable<Duration> stopWatch = Observable.create(
-			(Subscriber<? super Duration> s) -> {
+		Observable<Duration> stopWatch = Observable.<Duration>create(
+			s -> {
 				Clock clock = Clock.systemDefaultZone();
 				Instant instant = clock.instant();
-				while(!s.isUnsubscribed() && true){
+				while(!s.isUnsubscribed()){
 					Duration duration = Duration.between(instant, clock.instant());
 					s.onNext( duration );
 				}

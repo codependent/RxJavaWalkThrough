@@ -23,15 +23,15 @@ public class StopWatchObserver extends Subscriber<Duration>{
 	
 	public void onCompleted() {
 		finishTime = Clock.systemDefaultZone().instant();
-		System.out.printf("OBSERVER %s FINISHED\n", name);
+		System.out.printf("[%s] OBSERVER %s FINISHED\n", Thread.currentThread().getName(), name);
 	}
 
 	public void onError(Throwable e) {
-		System.err.printf("OBSERVER %s ERROR: %s\n", name, e);
+		System.err.printf("[%s] OBSERVER %s ERROR: %s\n", Thread.currentThread().getName(), name, e);
 	}
 
 	public void onNext(Duration t) {
-		System.out.printf("OBSERVER %s GOT: %s\n", name, t);
+		System.out.printf("[%s] OBSERVER %s GOT: %s\n", Thread.currentThread().getName(), name, t);
 		if(t.getSeconds() >= maxTime){
 			unsubscribe();
 		}

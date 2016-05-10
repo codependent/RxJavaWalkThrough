@@ -1,6 +1,8 @@
 package com.codependent.rx.sample3;
 
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -9,6 +11,7 @@ import org.testng.annotations.Test;
 
 import rx.Observable;
 import rx.Observer;
+import rx.Subscriber;
 import rx.observables.ConnectableObservable;
 import rx.schedulers.Schedulers;
 import rx.subjects.PublishSubject;
@@ -97,7 +100,7 @@ public class HotColdObservableTest {
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-				System.out.println("["+Thread.currentThread().getName()+ "] observable");
+				System.out.println("["+Thread.currentThread().getName()+ "] observable emits value");
 				s.onNext(1);
 			}
 		})
@@ -106,10 +109,18 @@ public class HotColdObservableTest {
 		.observeOn(Schedulers.io())
 		.publish();
 		
-		Observer<Integer> observer = new Observer<Integer>() {
+		Observer<Integer> observer = new Subscriber<Integer>() {
+			
+			private List<Integer> received = new ArrayList<>();
+			
 			@Override
 			public void onNext(Integer i) {
 				System.out.println("["+Thread.currentThread().getName()+ "] got "+i);
+				received.add(i);
+				if(received.size()>=10){
+					unsubscribe();
+					latch.countDown();
+				}
 			}
 			@Override
 			public void onCompleted() {
@@ -136,10 +147,10 @@ public class HotColdObservableTest {
 		
 		PublishSubject<Integer> subject = PublishSubject.<Integer>create();
 		
-		ConnectableObservable<Integer> series = Observable.<Object, Long, Integer>zip(
+		ConnectableObservable<Integer> series = Observable.<Integer, Long, Integer>zip(
 				Observable.range(1, 10) , 
 				Observable.interval(1, TimeUnit.SECONDS),
-					(val, timer) -> (Integer)val)
+					(val, timer) -> val)
 			    .doOnNext(item -> {
 			    	System.out.println("["+Thread.currentThread().getName()+ "] Emitting item: "+item);
 			    })

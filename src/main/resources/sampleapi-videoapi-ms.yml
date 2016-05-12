@@ -20,12 +20,12 @@ hystrix:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 60000  
+            timeoutInMilliseconds: 1000  
     getVideoRating:
       execution:
         isolation:
           thread:
-            timeoutInMilliseconds: 60000  
+            timeoutInMilliseconds: 1000  
 
 logging:
 #   file: /var/memento/security.log

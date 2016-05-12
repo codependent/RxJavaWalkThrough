@@ -46,7 +46,7 @@ public class VideoClient {
 		}).subscribeOn(Schedulers.io());
 	}
 	
-	@HystrixCommand(observableExecutionMode=ObservableExecutionMode.EAGER)
+	@HystrixCommand(observableExecutionMode=ObservableExecutionMode.EAGER, fallbackMethod="getVideoBasicInfoFallback")
 	public Observable<VideoBasicInfo> getVideoBasicInfo(Integer videoId){
 		return Observable.<VideoBasicInfo>create( (s) -> {
 			s.onNext(invokeGetVideoBasicInfoSync(videoId));
@@ -54,12 +54,22 @@ public class VideoClient {
 		}).subscribeOn(Schedulers.io());
 	}
 	
-	@HystrixCommand(observableExecutionMode=ObservableExecutionMode.EAGER)
+	protected Observable<VideoBasicInfo> getVideoBasicInfoFallback(Integer videoId, Throwable error){
+		VideoBasicInfo videoBasicInfo = new VideoBasicInfo(videoId, "N/A", -1);
+		return Observable.just(videoBasicInfo);
+	}
+	
+	@HystrixCommand(observableExecutionMode=ObservableExecutionMode.EAGER, fallbackMethod="getVideoRatingFallback")
 	public Observable<VideoRating> getVideoRating(Integer videoId){
 		return Observable.<VideoRating>create( (s) -> {
 			s.onNext(invokeGetVideoRatingSync(videoId));
 			s.onCompleted();
 		}).subscribeOn(Schedulers.io());
+	}
+	
+	protected Observable<VideoRating> getVideoRatingFallback(Integer videoId, Throwable error){
+		VideoRating rating = new VideoRating(videoId, -1);
+		return Observable.just(rating);
 	}
 	
 	
@@ -77,14 +87,22 @@ public class VideoClient {
 		return invokeAddRatingSync(rating);
 	}
 	
-	@HystrixCommand
+	@HystrixCommand(fallbackMethod="getVideoBasicInfoSyncFallback")
 	public VideoBasicInfo getVideoBasicInfoSync(Integer videoId){
 		return invokeGetVideoBasicInfoSync(videoId);
 	}
 	
-	@HystrixCommand
+	protected VideoBasicInfo getVideoBasicInfoSyncFallback(Integer videoId){
+		return new VideoBasicInfo(videoId, "N/A", -1);
+	}
+	
+	@HystrixCommand(fallbackMethod="getVideoRatingSyncFallback")
 	public VideoRating getVideoRatingSync(Integer videoId){
 		return invokeGetVideoRatingSync(videoId);
+	}
+	
+	protected VideoRating getVideoRatingSyncFallback(Integer videoId){
+		return new VideoRating(videoId, -1);
 	}
 	
 	
